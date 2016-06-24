@@ -33,7 +33,7 @@
 				<!-- Main -->
 					<div id="main">
 
-						<!-- Me -->
+						<!-- Homescreen -->
 							<article id="homeScreen" class="panel">
 								<header>
 									<h1>Foodsharing Darmstadt</h1>
@@ -174,8 +174,8 @@
 								<header>
 									<h2>FAQ</h2>
 								</header>
-								<h3>Question</h3>
-								<div>Answer</div>
+								<h3>Why is this Page looking this way?</h3>
+								<div>This layout is a mixture of both <a href="http://presentator.io/en/YcDk4#v1-s1">this presentation</a> and my own ideas. Please see <a href="https://trello.com/c/oydZpy8L/155-templates-for-mvp-proposal">this Trello card</a> for more information.</div>
 							</article>
 							
 							
@@ -216,7 +216,7 @@
 				<!-- Footer -->
 					<div id="footer">
 						<ul class="copyright">
-							<li>&copy; Untitled.</li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
+							<li><a href="http://www.yunity.org">yunity</a></li><li>Design: <a href="http://html5up.net">HTML5 UP</a></li>
 						</ul>
 					</div>
 
@@ -229,118 +229,6 @@
 			<script src="assets/js/util.js"></script>
 			<!--[if lte IE 8]><script src="assets/js/ie/respond.min.js"></script><![endif]-->
 			<script src="assets/js/main.js"></script>
-			<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
-			<script>
-
-
-			function loginUserSuccess(data, status, xhr){
-				var cookieToSet=xhr.getResponseHeader('Connection');
-				alert(cookieToSet);
-				console.log(data)
-				console.log(status)
-				console.log(xhr)
-			}
-
-			function loginUserError(data, status){
-		        alert("Error!");
-			}
-			function loginUser(){
-				
-				var email = document.getElementById("login-email-input").value;;
-				var pw = document.getElementById("login-pw-input").value;
-				$.ajax("https://dev.yunity.org/api/auth/", {
-				     method: 'POST',
-				     data: {email: email, password: pw},
-				     crossDomain: true,
-				     success: loginUserSuccess,
-				     error: loginUserError,
-				     complete:function (xhr) {
-							var cookieToSet=xhr.getResponseHeader('Connection');
-							alert(cookieToSet);
-							console.log(xhr)
-				     }
-				  });
-			}
-
-			
-			function signUp(){
-				var username = document.getElementById("signUp-username-input").value;
-				var firstname = document.getElementById("signUp-firstname-input").value;
-				var lastname = document.getElementById("signUp-lastname-input").value;
-				var pw = document.getElementById("signUp-pw-input").value;
-				var pwRepeat = document.getElementById("signUp-pwRepeat-input").value;
-				var email = document.getElementById("signUp-email-input").value;
-				$.post("https://dev.yunity.org/api/users/",
-					    {
-							display_name: username,
-							first_name: firstname,
-							last_name: lastname,
-							email: email,
-							password: pw
-					    },
-					    function(data, status){
-					        if(status){
-					        	alert("Eingeloggt!")
-					        }
-					    })  .fail(function() {
-					        alert( "Falsches Passwort oder Falsche E-Mail Adresse!" );
-					    });
-			}
-			
-			
-			function getUsers() {
-  	  			$.ajax({
-	  			    url: "https://dev.yunity.org/api/users/",
-	  			    dataType: "json",
-	  			    success : function(data) {
-	  			    	displayUsers(data);
-	  			    }
-  	  			});
-  			    return;
-	  		}
-
-			// https://dev.yunity.org
-			
-			
-			function isLoggedIn(){				  
-  	  			$.ajax({
-	  			    url: "https://dev.yunity.org/api/auth/status",
-	  			    method: 'GET',
-	  			    dataType: "json",
-				    crossDomain: true,
-	  			    success : function(data) {
-	  			    	if(data["display_name"] == ""){
-	  			    		alert("nicht eingeloggt!");
-	  			    	} else {
-	  			    		alert("eingeloggt!");
-	  			    		alert(data["display_name"])
-	  			    	}
-	  			    }
-  	  			});
-  			    return;
-				
-			}
-			
-			function displayUsers(data){
-				var chatUserString = "";
-				var firstOne = true;
-				data.forEach(function(entry) {
-					if(firstOne){
-	  			    	chatUserString += '<div class="chat-user active">'+entry["display_name"]+'</div>';
-	  			    	firstOne = false;						
-					} else {
-	  			    	chatUserString += '<div class="chat-user">'+entry["display_name"]+'</div>';						
-					}
-  			    });
-				document.getElementById("chat-users").innerHTML = chatUserString;
-			}
-			
-	  		$( document ).ready(function() {
-	  			getUsers();
-	  			//isLoggedIn();
-	  		});
-	  		
-			</script>
 
 	</body>
 </html>

@@ -241,3 +241,113 @@
 	});
 
 })(jQuery);
+
+// ************** Functions for ajax Requests ***********************
+
+function loginUserSuccess(data, status, xhr){
+	var cookieToSet=xhr.getResponseHeader('Connection');
+	alert(cookieToSet);
+	console.log(data)
+	console.log(status)
+	console.log(xhr)
+}
+
+function loginUserError(data, status){
+	alert("Error!");
+}
+function loginUser(){
+	
+	var email = document.getElementById("login-email-input").value;;
+	var pw = document.getElementById("login-pw-input").value;
+	$.ajax("https://dev.yunity.org/api/auth/", {
+		 method: 'POST',
+		 data: {email: email, password: pw},
+		 crossDomain: true,
+		 success: loginUserSuccess,
+		 error: loginUserError,
+		 complete:function (xhr) {
+				var cookieToSet=xhr.getResponseHeader('Connection');
+				alert(cookieToSet);
+				console.log(xhr)
+		 }
+	  });
+}
+
+
+function signUp(){
+	var username = document.getElementById("signUp-username-input").value;
+	var firstname = document.getElementById("signUp-firstname-input").value;
+	var lastname = document.getElementById("signUp-lastname-input").value;
+	var pw = document.getElementById("signUp-pw-input").value;
+	var pwRepeat = document.getElementById("signUp-pwRepeat-input").value;
+	var email = document.getElementById("signUp-email-input").value;
+	$.post("https://dev.yunity.org/api/users/",
+			{
+				display_name: username,
+				first_name: firstname,
+				last_name: lastname,
+				email: email,
+				password: pw
+			},
+			function(data, status){
+				if(status){
+					alert("Eingeloggt!")
+				}
+			})  .fail(function() {
+				alert( "Falsches Passwort oder Falsche E-Mail Adresse!" );
+			});
+}
+
+
+function getUsers() {
+	$.ajax({
+		url: "https://dev.yunity.org/api/users/",
+		dataType: "json",
+		success : function(data) {
+			displayUsers(data);
+		}
+	});
+	return;
+}
+
+// https://dev.yunity.org
+
+
+function isLoggedIn(){				  
+	$.ajax({
+		url: "https://dev.yunity.org/api/auth/status",
+		method: 'GET',
+		dataType: "json",
+		crossDomain: true,
+		success : function(data) {
+			if(data["display_name"] == ""){
+				alert("nicht eingeloggt!");
+			} else {
+				alert("eingeloggt!");
+				alert(data["display_name"])
+			}
+		}
+	});
+	return;
+	
+}
+
+function displayUsers(data){
+	var chatUserString = "";
+	var firstOne = true;
+	data.forEach(function(entry) {
+		if(firstOne){
+			chatUserString += '<div class="chat-user active">'+entry["display_name"]+'</div>';
+			firstOne = false;						
+		} else {
+			chatUserString += '<div class="chat-user">'+entry["display_name"]+'</div>';						
+		}
+	});
+	document.getElementById("chat-users").innerHTML = chatUserString;
+}
+
+$( document ).ready(function() {
+	getUsers();
+	//isLoggedIn();
+});
+	  		
