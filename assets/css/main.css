@@ -27,7 +27,7 @@
 	}
 
 	.yunity-logo {
-		background-image: url("/assets/icons/yunityLogoOnly1.svg");
+		background-image: url("../icons/yunityLogoOnly1.svg");
 		background-repeat: no-repeat;
 		background-position: 0px 25px;
 		background-size: auto 40%;
@@ -908,7 +908,7 @@
 /* Basic */
 
 	body {
-		background-image: url("/images/overlay.png"), url("/images/YunityLogoBG.jpg");
+		background-image: url("images/overlay.png"), url("../../images/YunityLogoBG.jpg");
 		background-repeat: no-repeat;
 		background-size: auto, 100%;
 		font-family: 'Source Sans Pro', sans-serif;

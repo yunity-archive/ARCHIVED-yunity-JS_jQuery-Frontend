@@ -144,7 +144,7 @@
 						<!-- Profil -->
 							<article id="profile" class="panel">
 								<header>
-									<img style="width: 7em" class="image left" src="/images/prof01.jpg"></img>
+									<img style="width: 7em" class="image left" src="images/prof01.jpg"></img>
 									<h2  style="display: inline;">Lars Wolf</h2><i onclick="isLoggedIn()" style="display: inline; margin-left: 1em"class="icon fa-pencil"></i>
 									<p>Newbie</p>
 								</header>
@@ -248,7 +248,7 @@
 				
 				var email = document.getElementById("login-email-input").value;;
 				var pw = document.getElementById("login-pw-input").value;
-				$.ajax("https://localhost/api/auth/", {
+				$.ajax("https://dev.yunity.org/api/auth/", {
 				     method: 'POST',
 				     data: {email: email, password: pw},
 				     crossDomain: true,
@@ -290,7 +290,7 @@
 			
 			function getUsers() {
   	  			$.ajax({
-	  			    url: "https://localhost/api/users/",
+	  			    url: "https://dev.yunity.org/api/users/",
 	  			    dataType: "json",
 	  			    success : function(data) {
 	  			    	displayUsers(data);
@@ -304,7 +304,7 @@
 			
 			function isLoggedIn(){				  
   	  			$.ajax({
-	  			    url: "https://localhost/api/auth/status",
+	  			    url: "https://dev.yunity.org/api/auth/status",
 	  			    method: 'GET',
 	  			    dataType: "json",
 				    crossDomain: true,
