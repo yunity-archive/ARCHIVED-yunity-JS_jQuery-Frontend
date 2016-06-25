@@ -320,7 +320,7 @@ function getUsers() {
 
 function isLoggedIn(){				  
 	$.ajax({
-		url: "https://dev.yunity.org/api/auth/status",
+		url: "https://dev.yunity.org/api/auth/status/",
 		method: 'GET',
 		dataType: "json",
 		crossDomain: true,
