@@ -15,15 +15,14 @@
 		right: -10px;
 		top: 0px; 
 		border-style: solid;
-    	border-color: #ff0000;
-    	border-width: 1px;
-    	color: white;
-    	text-align: center;
-    	padding-top: -1em;
-    	font-size: 20px;
-    	
-  display: inline-block;
-  line-height: 1.6em;
+                border-color: #ff0000;
+                border-width: 1px;
+                color: white;
+                text-align: center;
+                padding-top: -1em;
+                font-size: 20px;
+                display: inline-block;
+                line-height: 1.4em;
 	}
 
 	.yunity-logo {
