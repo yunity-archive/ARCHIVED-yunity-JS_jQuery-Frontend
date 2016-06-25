@@ -220,8 +220,6 @@
                                         }
 
 					$wrapper.fadeTo(400, 1.0);
-
-
 	});
 
 })(jQuery);
@@ -308,7 +306,7 @@ function updateChatNotifNumber(notifNumber){
 
 function isLoggedIn(){				  
 	$.ajax({
-		url: baseDomain + "/api/auth/status/",
+                url: baseDomain + "/api/auth/status/",
 		method: 'GET',
 		dataType: "json",
 		crossDomain: true,
