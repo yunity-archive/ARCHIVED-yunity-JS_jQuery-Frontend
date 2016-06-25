@@ -237,6 +237,11 @@
 				}, 50);
 
 			});
+			$.ajaxSetup({
+				xhrFields: {
+					withCredentials: true
+				}
+			});
 
 	});
 
