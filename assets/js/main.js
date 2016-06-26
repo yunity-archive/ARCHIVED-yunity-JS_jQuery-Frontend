@@ -14,17 +14,53 @@
 			fadeSpeed: 300,
 
 		// Size factor.
-			sizeFactor: 11.5,
+			sizeFactor: 17,
 
 		// Minimum point size.
-			sizeMin: 15,
+			sizeMin: 12,
 
 		// Maximum point size.
-			sizeMax: 20
+			sizeMax: 18
 
 	};
 
-	var $window = $(window);
+	var $window = $(window),
+            $body = $('body');;
+        
+        // Off-Canvas Navigation.
+            // Title Bar.
+                    $(
+                            '<div id="titleBar">' +
+                                    '<a href="#navPanel" class="toggle"></a>' +
+                                    '<span class="title"> Yunity </span>' +
+                            '</div>'
+                    )
+                            .appendTo($body);
+
+            // Navigation Panel.
+                    $(
+                            '<div id="navPanel">' +
+                                    '<nav>' +
+                                            $('#nav').navList() +
+                                    '</nav>' +
+                            '</div>'
+                    )
+                            .appendTo($body)
+                            .panel({
+                                    delay: 500,
+                                    hideOnClick: true,
+                                    hideOnSwipe: true,
+                                    resetScroll: true,
+                                    resetForms: true,
+                                    side: 'left',
+                                    target: $body,
+                                    visibleClass: 'navPanel-visible'
+                            });
+
+            // Fix: Remove navPanel transitions on WP<10 (poor/buggy performance).
+                    if (skel.vars.os == 'wp' && skel.vars.osVersion < 10)
+                            $('#titleBar, #navPanel, #page-wrapper')
+                                    .css('transition', 'none');
 
 	$window.on('load', function() {
 
@@ -49,7 +85,6 @@
                 $footer = $('#footer'),
                 $wrapper = $('#wrapper'),
                 $nav = $('#nav'), $nav_links = $nav.find('a'),
-                $jumplinks = $('.jumplink'),
                 $form = $('form'),
                 panels = [],
                 activePanelId = null,
@@ -57,6 +92,23 @@
                 isLocked = false,
                 hash = window.location.hash.substring(1);
 
+
+            function refreshJumplinks(){
+                var $jumplinks = $('.jumplink');
+                $jumplinks.click(function(e) {
+                    var t = $(this), href = t.attr('href'), id;
+                            
+                    if (href.substring(0,1) == '#') {
+
+                            e.preventDefault();
+                            e.stopPropagation();
+                            id = href.substring(1);
+                            loadPage(href.substring(1))
+
+                    }
+                });
+            }
+            
 	   function loadPage(id){
                     instant = false
     
@@ -127,6 +179,7 @@
 
                                                                                 // Unlock.
                                                                                         isLocked = false;
+                                                                                        refreshJumplinks();
 
                                                                         });
                                                         });
@@ -138,25 +191,34 @@
 
 }		
 
-				// Body.
-					$body._resize = function() {
+                                        function resizeElementsOfPage(){
 						var factor = ($window.width() * $window.height()) / (1440 * 900);
 						$body.css('font-size', Math.min(Math.max(Math.floor(factor * settings.sizeFactor), settings.sizeMin), settings.sizeMax) + 'pt');
 						$main.height($("article").first().outerHeight());
+                                            
+                                        }
+				// Body.
+					$body._resize = function() {
+                                                resizeElementsOfPage();
 						$body._reposition();
 					};
+                                        
+                                        setInterval(function() {
+						resizeElementsOfPage();
+						$body._reposition();
+					}, 500);
 
 					$body._reposition = function() {
 						if (skel.vars.touch && (window.orientation == 0 || window.orientation == 180))
-							$wrapper.css('padding-top', Math.max((($window.height() - ($("article").first().outerHeight() + $footer.outerHeight())) / 2) - $nav.height(), 30) + 'px');
+							$wrapper.css('padding-top', Math.max((($window.height() - ($("article").first().outerHeight() + $footer.outerHeight())) / 2) - $nav.height() - 40, 30) + 'px');
 						else
 							$wrapper.css('padding-top', ((($window.height() - $("article").first().height()) / 2) - $nav.height()) + 'px');
 					};
 
 				
 
-				// Nav + Jumplinks.
-					$nav_links.add($jumplinks).click(function(e) {
+				// Nav Links.
+					$nav_links.click(function(e) {
 						var t = $(this), href = t.attr('href'), id;
 
 						if (href.substring(0,1) == '#') {
@@ -278,16 +340,6 @@ function signUp(){
 }
 
 
-function getUsers() {
-	$.ajax({
-		url: baseDomain + "/api/users/",
-		dataType: "json",
-		success : function(data) {
-			displayUsers(data);
-		}
-	});
-	return;
-}
 
 /**
  * Shows the Notification Bubble at the Chat icon
@@ -301,8 +353,6 @@ function updateChatNotifNumber(notifNumber){
         $("#navChat").html('<div class="circle notification">'+notifNumber+'</div><span>Chat</span>')        
     }
 }
-
-
 
 function isLoggedIn(){				  
 	$.ajax({
@@ -322,20 +372,6 @@ function isLoggedIn(){
 	
 }
 
-function displayUsers(data){
-	var chatUserString = "";
-	var firstOne = true;
-	data.forEach(function(entry) {
-		if(firstOne){
-			chatUserString += '<div class="chat-user active">'+entry["display_name"]+'</div>';
-			firstOne = false;
-		} else {
-			chatUserString += '<div class="chat-user">'+entry["display_name"]+'</div>';						
-		}
-	});
-	document.getElementById("chat-users").innerHTML = chatUserString;
-}
-
 $( "#logStatus" ).click(function() {
     // add login / logout functionality here later
 });
@@ -343,7 +379,6 @@ $( "#logStatus" ).click(function() {
 
 $( document ).ready(function() {   
         //isLoggedIn();
-        updateChatNotifNumber(5)
         $.ajaxSetup({
             xhrFields: {
 		withCredentials: true

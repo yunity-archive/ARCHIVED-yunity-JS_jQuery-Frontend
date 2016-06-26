@@ -15,15 +15,17 @@
 			var	$this = $(this),
 				indent = Math.max(0, $this.parents('li').length - 1),
 				href = $this.attr('href'),
-				target = $this.attr('target');
+				target = $this.attr('target'),
+				iconClass = $this.attr('class');
 
 			b.push(
 				'<a ' +
-					'class="link depth-' + indent + '"' +
+					'class="link jumplink depth-' + indent + '"' +
 					( (typeof target !== 'undefined' && target != '') ? ' target="' + target + '"' : '') +
 					( (typeof href !== 'undefined' && href != '') ? ' href="' + href + '"' : '') +
 				'>' +
 					'<span class="indent-' + indent + '"></span>' +
+                                        '<i style="margin-right: .5em" class="' + iconClass + '"></i>' + 
 					$this.text() +
 				'</a>'
 			);
@@ -102,7 +104,6 @@
 
 			// Methods.
 				$this._hide = function(event) {
-
 					// Already hidden? Bail.
 						if (!config.target.hasClass(config.visibleClass))
 							return;
@@ -144,11 +145,13 @@
 				if (config.hideOnClick) {
 
 					$this.find('a')
-						.css('-webkit-tap-highlight-color', 'rgba(0,0,0,0)');
+						.css('-webkit-tap-highlight-color', 'rgba(0,0,0,0)')
+                                                .on('click',function(event) {
+                                                    $this._hide(event);
+                                                        });
 
 					$this
 						.on('click', 'a', function(event) {
-
 							var $a = $(this),
 								href = $a.attr('href'),
 								target = $a.attr('target');
@@ -256,8 +259,7 @@
 
 			// Event: Hide panel if a child anchor tag pointing to its ID is clicked.
 				$this.on('click', 'a[href="#' + id + '"]', function(event) {
-
-					event.preventDefault();
+                                        event.preventDefault();
 					event.stopPropagation();
 
 					config.target.removeClass(config.visibleClass);
@@ -273,7 +275,7 @@
 
 			// Event: Toggle.
 				$body.on('click', 'a[href="#' + id + '"]', function(event) {
-
+                                        
 					event.preventDefault();
 					event.stopPropagation();
 
