@@ -3,14 +3,29 @@
         <header>
                 <h2>Sign Up</h2>
         </header>
-        <form>
-                <input id="signUp-username-input"  style="margin: 1em; width: 80%" type="text" placeholder="Username"></input>
-                <input id="signUp-firstname-input"  style="margin: 1em; width: 80%" type="text" placeholder="First Name"></input>
-                <input id="signUp-lastname-input"  style="margin: 1em; width: 80%" type="text" placeholder="Last Name"></input>
-
-                <input id="signUp-pw-input"  style="margin: 1em; width: 80%" type="text" placeholder="Password"></input>
-                <input id="signUp-pwRepeat-input"  style="margin: 1em; width: 80%" type="text" placeholder="Repeat Password"></input>
-                <input id="signUp-email-input"  style="margin: 1em; width: 80%" type="text" placeholder="E-Mail"></input>
+        <form
+            <div class="row">
+                <div class="6u" style="padding: 2em">
+                    <input id="signUp-username-input"  style="margin: 1em; width: 100%" type="text" placeholder="Username"></input>
+                    <div style="color: red" id="signUp-notice-user"></div>
+                    <input id="signUp-firstname-input"  style="margin: 1em; width: 100%" type="text" placeholder="First Name"></input>
+                    <input id="signUp-lastname-input"  style="margin: 1em; width: 100%" type="text" placeholder="Last Name"></input>
+                </div>
+                <div class="6u" style="padding: 3em">
+                    <img src="images/prof01.jpg"></img>
+                </div>
+                <div class="12u" style="padding: 2em"> 
+                    
+                    <input id="signUp-pw-input"  style="margin: 1em;" type="password" placeholder="Password"></input>
+                    <input id="signUp-pwRepeat-input"  style="margin: 1em;" type="password" placeholder="Repeat Password"></input>
+                    <div style="color: red" id="signUp-notice-pw"></div>
+                    <input id="signUp-email-input"  style="margin: 1em; margin-top: 2.5em;" type="text" placeholder="E-Mail"></input>
+                    <div style="color: red" id="signUp-notice-email"></div>
+                </div>
+            </div>
         </form>
         <a class="button small" onclick="signUp()" style="float:right">Sign Up</a>
 </article>
+<script>
+    $.getScript("assets/js/signUp.js");
+</script>

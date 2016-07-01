@@ -1,7 +1,8 @@
 <!-- Homescreen -->
         <article id="currentPage" class="panel">
                 <header>
-                        <h1>Foodsharing Darmstadt</h1>
+                        <h1 id="homeScreen-groupName">Group Name (connecting...)</h1>
+                        <p id="homeScreen-groupDesc"></p>
                 </header>
                 <div class="row">
                         <div class="6u 12u(mobile)">
@@ -10,18 +11,17 @@
                                     Your next Pick-Ups
                                 </h4>
                                 <div>22.06.2016</div>
-                                <div id="homeScreen-pickups" style="max-height: 30em; overflow: auto"></div>
+                                <div id="homeScreen-pickups" style="max-height: 20em; overflow: auto"></div>
 
                         </div>
                         <div class="6u 12u(mobile)">
                                 <h4>
                                     <i class="icon fa fa-home" aria-hidden="true"></i>
                                     Stores in your Community
-                                    <i style="display: inline; margin-left: 1em"class="icon iconButton fa-plus-circle"></i>
+                                    <a href="#createStore?groupID=1" class="jumplink"><i style="display: inline; margin-left: 1em"class="icon iconButton fa-plus-circle"></i></a>
                                 </h4>
-                                <a href="#store" class="jumplink"><div class="homeScreen-store">Aldi</div></a>
-                                <div class="homeScreen-store">Rewe-Center</div>
-                                <div class="homeScreen-store">Kaufland</div>
+                                <div id="homeScreen-stores">
+                                </div>
                         </div>
                 </div>
         </article>

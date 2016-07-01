@@ -44,16 +44,38 @@
 		background-size: auto 40%;
 	}
 	
-	.homeScreen-pickup{
-            width: 100%;
-            padding: 0.3em;
-            border-radius: 5px;
-            border: thin solid #DDDDDD;
-            position: relative;       
-            margin-bottom: 1em;
-	}
         
-	
+          
+    /***************** homeScreen *******************/
+    
+    
+    .homeScreen-store {
+    	width: 100%;
+    	padding: 0.3em;
+    	padding-left: 0.6em;
+    	border-radius: 5px;
+    	border-bottom: thin solid #DDDDDD;
+    }
+    
+        .homeScreen-store:hover {
+                background-color:#F5F5F5;
+            }
+    
+    .homeScreen-pickup{
+        width: 100%;
+        padding: 0.3em;
+        border-radius: 5px;
+        border: thin solid #DDDDDD;
+        position: relative;       
+        margin-bottom: 1em;
+        transition: color .5s ease-in-out;
+    }
+    
+        .homeScreen-pickup:hover {
+            color: black;
+        }
+
+
         .homeScreen-pickup .leftSide{
             width: 100%;
             padding-right: 4em;
@@ -61,29 +83,29 @@
             -webkit-box-sizing: border-box;     
             box-sizing: border-box;
         }
-	
-	.homeScreen-pickup .time{
+
+        .homeScreen-pickup .time{
             font-weight: bold;
             display:inline;
         }
-	.homeScreen-pickup .store{
-    	display:inline;
-    }
-    
-    .homeScreen-pickup .join:before {
-        content: "";
-        display: inline-block;
-        height: 100%;
-        vertical-align: middle;
-      }
-    .homeScreen-pickup .join{
-        border-top-right-radius: 5px;
-        border-bottom-right-radius: 5px;
-        margin: 0em;
-        position:absolute;
-    	right: 0px;
-        top: 0px;
-        height: 100%;
+        .homeScreen-pickup .store{
+        display:inline;
+        }
+
+        .homeScreen-pickup .join:before {
+            content: "";
+            display: inline-block;
+            height: 100%;
+            vertical-align: middle;
+          }
+        .homeScreen-pickup .join{
+            border-top-right-radius: 5px;
+            border-bottom-right-radius: 5px;
+            margin: 0em;
+            position:absolute;
+            right: 0px;
+            top: 0px;
+            height: 100%;
     }
     
     /****************** Chat *********************/
@@ -148,7 +170,7 @@
 		content: '';
 		position: absolute;
 		border-style: solid; 
-		top: 7px;            
+		top: 3px;            
 		display: block;
 		width: 0;
 		z-index: 1;       
@@ -163,9 +185,9 @@
 		
 	.chat-message.received:after
 		{
-		border-width: 13px 13px 13px 0;
+		border-width: 12px 12px 12px 0;
 		border-color: transparent #3572B0;
-		left: -12px;
+		left: -11px;
 		}
 
     .chat-message.sent
@@ -177,9 +199,9 @@
 		
 	.chat-message.sent:after
 		{
-		border-width: 13px 0 13px 13px;
+		border-width: 12px 0 12px 12px;
 		border-color: transparent #205081;
-		right: -12px;
+		right: -11px;
 		}    
     
     
@@ -211,21 +233,8 @@
         top: 0px;
         height: 100%;        
     }
-                        
-    /***************** homeScreen *******************/
-    
-    
-    .homeScreen-store {
-    	width: 100%;
-    	padding: 0.3em;
-    	padding-left: 0.6em;
-    	border-radius: 5px;
-    	border-bottom: thin solid #DDDDDD;
-    }
-    
-    .homeScreen-store:hover {
-	    background-color:#F5F5F5;
-	}
+                      
+    /************ Profile **********
 	
     .profile-community {
     	width: 100%;
@@ -985,7 +994,7 @@
 /* Basic */
 
 	body {
-		background-image: url("images/overlay.png"), url("../../images/YunityLogoBG.jpg");
+		background-image: url("images/overlay.png"), url("../../images/background/1.jpg");
 		background-repeat: no-repeat;
 		background-size: auto, 100%;
 		font-family: 'Source Sans Pro', sans-serif;
@@ -1313,6 +1322,7 @@
 	#main {
 		position: relative;
 		overflow: hidden;
+                transition: height .5s ease-in-out;
 	}
 
 	.panel {
@@ -1465,6 +1475,7 @@
 				width: 45em;
 				margin: 0 auto;
 				opacity: 0.00001;
+                                transition: padding-top .5s ease-in-out;
 			}
 
 				#wrapper.tall {
@@ -1774,7 +1785,7 @@
 					}
 
 					#titleBar .toggle:before {
-						background: #B5B200;
+						background: #006000;
 						color: rgba(255, 255, 255, 0.5);
 						content: '\f0c9';
 						display: block;
@@ -1881,6 +1892,11 @@
 				-ms-transform: translateX(0);
 				transform: translateX(0);
 			}
+                        
+                        
+                    #navPanel a.hidden {
+                        display: none;
+                    }
 
 		/* Section/Article */
 
@@ -1983,8 +1999,12 @@
                 #chat-header-button {
                     cursor: pointer;
                     padding: .5em;
-                    border: thin solid #EEEEEE;
                     transition: transform 0.5s ease-in-out;
+                }
+                
+                #chat-header:hover{
+                    background-color: #eeeeee;
+                    color: #eeeeee;
                 }
                 
                 
@@ -1993,15 +2013,11 @@
                    margin-left: 1em;
                    transition: color, margin 0.5s ease-in-out;
                 }
-                
-                
-                #chat-header-button.hidden {
-                    border: thin none #EEEEEE;                   
-                }
-                
+                                
                 #chat-header-button.hidden > .fa{
                     margin: 0em;
+                    margin-right: .2em;
                     color: white;
-                }                  
+                }
 
 	}

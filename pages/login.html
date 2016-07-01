@@ -3,12 +3,15 @@
         <header>
                 <h2>Login</h2>
         </header>
-        <div style="width: 100%">
+        <div style="width: 100%, text-align: center">
                 <form>
-                        <input id="login-email-input" style="margin: 1em;" type="text" placeholder="Username"></input>
-                        <input id="login-pw-input" style="margin: 1em;" type="text" placeholder="Password"></input>
+                        <input id="login-email-input" style="margin: 1em;" type="email" placeholder="email adress"></input>
+                        <input id="login-pw-input" style="margin: 1em;" type="password" placeholder="password"></input>
                 </form>
                 <a style="background-color: #BBBBBB" class="button small jumplink" href="#signUp">Sign-Up</a>
                 <a class="button small" onclick="loginUser()">Login</a>
         </div>
 </article>
+<script>
+    $.getScript("assets/js/login.js");
+</script>

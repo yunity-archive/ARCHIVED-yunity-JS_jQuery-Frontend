@@ -1,0 +1,26 @@
+
+<!-- Stores -->
+
+<article id="store" class="panel">
+        <header>
+                <h2 style="display: inline">Create Store</h2>
+        </header>
+        <section>
+                <div class="row">
+                    <form>
+                        <h3>Store Information</h3>
+                        <input style="margin: .3em" id="createStore-storeName" type="text" placeholder="Store Name"></input>
+                        <textarea style="margin: .3em" id="createStore-storeDesc" type="text" placeholder="Description"></textarea>
+                        
+                        <h3>Group:</h3>
+                        <div id="createStore-groupName">No Group Found</div>
+                    </form>
+                </div>
+            <div class="button" id="createStore-createButton">Store Erstellen</div>
+        </section>
+</article>
+
+
+<script>    
+    $.getScript("assets/js/createStore.js");
+</script>

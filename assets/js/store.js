@@ -1,4 +1,10 @@
 
+// Look up adress in new Tab on Google
+function searchForAdress(adressString){
+    var adressString = replaceStringForSearch(adressString);
+    window.open('https://www.google.de/maps?q='+adressString,'_blank');
+}
+
 // adds a new Pickup to the Pickup list
 function addStorePickup(time, date, people){
     var newPickupStr = '<div class="homeScreen-pickup">' +
@@ -21,16 +27,30 @@ function replaceStringForSearch(res) {
     return res;
 }
 
-// Look up adress in new Tab on Google
-function searchForAdress(adressString){
-    var adressString = replaceStringForSearch(adressString);
-    window.open('https://www.google.de/maps?q='+adressString,'_blank');
+// get all Stores
+function getStoreData(storeID){
+	$.ajax({
+                cache: false,
+                url: baseDomain + "/api/stores/" + storeID,
+		method: 'GET',
+		dataType: "json",
+		success : function(data) {
+                    displayStoreData(data);
+		}
+	});
+}
+
+function displayStoreData(data){
+    console.log(data);
+    $("#store-storeName").html(data["name"]);
+    $("#store-storeInfo").html(data["description"])
 }
 
 $("#store-adress-link").click(function( event ) {
   event.preventDefault();
   searchForAdress($("#store-adress-link").html().toString());
 });
+
 
 $( document ).ready(function() {
     addStorePickup("12:45", "Dienstag, 26.07", '<a href="#profile" class="jumplink">Lars</a>, Flo..');
@@ -43,5 +63,7 @@ $( document ).ready(function() {
     addStorePickup("12:45", "Dienstag, 26.07", '<a href="#profile" class="jumplink">Lars</a>, Flo..');
     addStorePickup("12:45", "Dienstag, 26.07", '<a href="#profile" class="jumplink">Lars</a>, Flo..');
     addStorePickup("12:45", "Dienstag, 26.07", '<a href="#profile" class="jumplink">Lars</a>, Flo..');
+    
+    getStoreData(getUrlVar("id"))
 });
 	  		

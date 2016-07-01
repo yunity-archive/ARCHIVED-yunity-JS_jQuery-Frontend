@@ -18,7 +18,7 @@ function showChatUsersPanel() {
 }
                     
 function getUsers() {
-	/*$.ajax({
+	$.ajax({
 		url: baseDomain + "/api/users/",
 		dataType: "json",
 		success : function(data) {
@@ -29,9 +29,9 @@ function getUsers() {
                         //updateMessages(true);
                         //scrollToBottomOfMessageContainer();
 		}
-	});*/
-        recipients = [{"id":1,"display_name":"ml","first_name":"m","last_name":"l","email":"m@l.de"},{"id":2,"display_name":"Lars","first_name":"Lars","last_name":"Wolf","email":"lars.m.wolf@gmx.de"}];
-	updateRecipientsList();
+	});
+        /*recipients = [{"id":1,"display_name":"ml","first_name":"m","last_name":"l","email":"m@l.de"},{"id":2,"display_name":"Lars","first_name":"Lars","last_name":"Wolf","email":"lars.m.wolf@gmx.de"}];
+	updateRecipientsList();*/
         return;
 }
 

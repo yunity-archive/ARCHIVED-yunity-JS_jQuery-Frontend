@@ -17,10 +17,15 @@
 				href = $this.attr('href'),
 				target = $this.attr('target'),
 				iconClass = $this.attr('class');
+                        if($this.attr('id')){
+                                newID = 'id="navbar_' + $this.attr('id') + '"';
+                            } else {
+                                newID = "";
+                            }
 
 			b.push(
-				'<a ' +
-					'class="link jumplink depth-' + indent + '"' +
+				'<a ' + newID +
+					' class="link jumplink depth-' + indent + '"' +
 					( (typeof target !== 'undefined' && target != '') ? ' target="' + target + '"' : '') +
 					( (typeof href !== 'undefined' && href != '') ? ' href="' + href + '"' : '') +
 				'>' +
