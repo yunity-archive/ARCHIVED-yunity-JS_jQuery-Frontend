@@ -1,0 +1,8 @@
+test:
+  override:
+    - true
+deployment:
+  dev:
+    branch: master
+    commands:
+      - ./deploy.sh
