@@ -34,7 +34,7 @@ function createStore(){
 			function(data, status){
 				if(status){
 					alert("Store erstellt!")
-                                        loadPage("homeScreen")
+                                        loadPage("homeScreen?groupID=" + getUrlVar("groupID"))
 				}
 	})  
             .fail(function() {

@@ -32,61 +32,12 @@ function getAllCommunitiesForUser(userID){
             });    
 }
 
-function userIDisMemberOfGroup(userID, group){
-    var isIncluded = false;
-    group["members"].forEach(function(entry) {
-                            if(entry["id"] == userID){
-                                isIncluded = true;
-                            }
-                    });
-    return isIncluded;
-}
 
 
-function joinGroup(groupID){
-    var csrftoken = getCookie("csrftoken");
-    
-    	$.post(baseDomain + "/api/groups/" + groupID + "/join/",
-			{
-				name: "",
-				description: "",
-                                csrfmiddlewaretoken: csrftoken
-			},
-			function(data, status){
-				if(status){
-					alert("Gruppe beigetreten!")
-                                        loadPage("homeScreen?groupID=" + groupID)
-				}
-	})  
-            .fail(function() {
-                alert( "Konnte nicht beitreten..." );
-            });
-}
-
-function leaveGroup(groupID){
-    alert("not possible yet - backend needs to be updated")
-    var csrftoken = getCookie("csrftoken");
-    
-    	$.post(baseDomain + "/api/groups/" + groupID + "/leave/",
-			{
-				name: "",
-				description: "",
-                                csrfmiddlewaretoken: csrftoken
-			},
-			function(data, status){
-				if(status){
-					alert("Gruppe verlassen!")
-                                        loadPage("homeScreen?groupID=" + groupID)
-				}
-	})  
-            .fail(function() {
-                alert( "Gruppe verlassen nicht möglich..." );
-            });
-}
 
 function displayCommunitiesForUser(userID, data){
     data.forEach(function(entry) {
-                            if(userIDisMemberOfGroup(userID, entry)){
+                            if(isNumberInArray(userID, entry["members"])){
                                 var joinGroupButton = "";
                                 if(displayCurrentUser){
                                     joinGroupButton = '<i onclick="leaveGroup('+entry["id"]+')" style="display: inline-block; margin-left: 1em" class="icon iconButton fa-sign-out"></i>';

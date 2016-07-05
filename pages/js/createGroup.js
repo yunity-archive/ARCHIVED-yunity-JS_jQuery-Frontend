@@ -1,12 +1,3 @@
-
-
-var groupID = 0;
-function displayGroupInfo(data){
-    $("#createStore-groupName").html(data["name"]);
-    groupID = data["id"];
-}
-
-
 function createStore(){
     var storeName = $("#createGroup-groupName").val();
     var storeDesc = $("#createGroup-groupDesc").val();

@@ -1,6 +1,59 @@
 @import url("http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,300italic,400italic");
 @import url("font-awesome.min.css");
 
+    /************* dropdown Menus ************/
+    
+    .dropdown {
+        display: inline;
+    }
+    
+    .dropdown li span{
+        padding: .5em;
+    }
+
+    .dropdown:hover{
+        color: #fff;
+    }
+
+    .dropdown li {
+      display: inline-block;
+      position: relative;
+      z-index: 100;
+    }
+
+    .dropdown li a {
+      color: #fff;
+      display: block;
+      font-size: 14px;
+      padding: 15px 14px;
+      transition: 0.3s linear;
+    }
+
+    .dropdown li:hover { background: #005800; }
+
+    .dropdown li ul {
+      display: none;
+      position: absolute;
+      width: 250px;
+    }
+
+    .dropdown li ul li {
+      border-top: 1px solid #444;
+      display: block;
+    }
+
+    .dropdown li ul li:first-child { border-top: none; }
+
+    .dropdown li ul li a {
+      background: #373737;
+      display: block;
+      padding: 10px 14px;
+    }
+
+    .dropdown li ul li a:hover {
+        background: #005800;
+    }
+
 
         .iconButton {
             cursor: pointer;
@@ -44,7 +97,6 @@
 		background-size: auto 40%;
 	}
 	
-        
           
     /***************** homeScreen *******************/
     
@@ -61,7 +113,22 @@
                 background-color:#F5F5F5;
             }
     
-    .homeScreen-pickup{
+            
+    /* *************+ Pickup Lists ************************/
+    .pickupList-pickupArea {
+        overflow: auto;
+        border-top: 1px;
+        border-style: solid;
+        border-color: #DDD;
+    }
+
+    .pickupList-Header-infoString {
+        font-weight: 500;
+        margin-top: .1em;
+        margin-left: 5px;
+    }
+        
+    .pickupList-pickup{
         width: 100%;
         padding: 0.3em;
         border-radius: 5px;
@@ -71,12 +138,12 @@
         transition: color .5s ease-in-out;
     }
     
-        .homeScreen-pickup:hover {
+        .pickupList-pickup:hover {
             color: black;
         }
 
 
-        .homeScreen-pickup .leftSide{
+        .pickupList-pickup .leftSide{
             width: 100%;
             padding-right: 4em;
             -moz-box-sizing: border-box; 
@@ -84,30 +151,54 @@
             box-sizing: border-box;
         }
 
-        .homeScreen-pickup .time{
+        .pickupList-pickup .time{
             font-weight: bold;
             display:inline;
+            margin: 0 .4em;
         }
-        .homeScreen-pickup .store{
+        .pickupList-pickup .store{
         display:inline;
         }
 
-        .homeScreen-pickup .join:before {
+        .pickupList-pickup .button:before {
             content: "";
             display: inline-block;
             height: 100%;
             vertical-align: middle;
           }
-        .homeScreen-pickup .join{
-            border-top-right-radius: 5px;
-            border-bottom-right-radius: 5px;
-            margin: 0em;
-            position:absolute;
-            right: 0px;
-            top: 0px;
-            height: 100%;
-    }
+        
+        .pickupList-pickup .button{
+          border-top-right-radius: 5px;
+          border-bottom-right-radius: 5px;
+          margin: 0em;
+          position:absolute;
+          right: 0px;
+          top: 0px;
+          height: 100%;              
+        }
+        
+        
+        .pickupList-pickup .leave{
+          background-color: #660000;           
+        }
+        
+        .pickupList-pickup .leave:hover{
+          background-color: #BF0000;           
+        }
+        
+        .pickupList-pickup .leave:active{
+          background-color: #EE0000;           
+        }
     
+        
+        .pickupList-pickup .pickupMember{
+            padding: .2em .5em;
+            color: black;
+            margin: .2em;
+            cursor: pointer;
+        }
+    
+        
     /****************** Chat *********************/
     
     .chat-user {
@@ -1472,7 +1563,7 @@
 		/* Wrapper */
 
 			#wrapper {
-				width: 45em;
+				width: 50em;
 				margin: 0 auto;
 				opacity: 0.00001;
                                 transition: padding-top .5s ease-in-out;
@@ -1576,7 +1667,7 @@
 		/* Panels */
 
 			#main {
-				width: 45em;
+				width: 100%;
 				background: #ffffff;
 				box-shadow: 0px 1px 0px 0px rgba(0, 0, 0, 0.25);
 			}
@@ -1586,7 +1677,7 @@
 				position: absolute;
 				top: 0;
 				left: 0;
-				width: 45em;
+				width: 100%;
 			}
 
 		/* Me */

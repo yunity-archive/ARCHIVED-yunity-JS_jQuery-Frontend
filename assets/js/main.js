@@ -41,7 +41,11 @@ var isMobile = false,
     activePanelId = null,
     firstPanelId = 'homeScreen',
     baseDomain = "",
-    loggedInUserData;
+    
+    loggedInUserData,
+    storedStoreData,
+    storedUserData,
+    currentGroup;
     
    
 (function($) {    
@@ -77,118 +81,115 @@ var isMobile = false,
 
             
 
-                                        function resizeElementsOfPage(){
-						var factor = ($window.width() * $window.height()) / (1440 * 900);
-						$body.css('font-size', Math.min(Math.max(Math.floor(factor * settings.sizeFactor), settings.sizeMin), settings.sizeMax) + 'pt');
-						$main.height($("article").first().outerHeight());
-                                            
-                                        }
-				// Body.
-					$body._resize = function() {
-                                                resizeElementsOfPage();
-						$body._reposition();
-					};
-                                        
-                                        setInterval(function() {
-						resizeElementsOfPage();
-						$body._reposition();
-					}, 500);
+            function resizeElementsOfPage(){
+                    var factor = ($window.width() * $window.height()) / (1440 * 900);
+                    $body.css('font-size', Math.min(Math.max(Math.floor(factor * settings.sizeFactor), settings.sizeMin), settings.sizeMax) + 'pt');
+                    $main.height($("article").first().outerHeight());
 
-					$body._reposition = function() {
-						if (skel.vars.touch && (window.orientation == 0 || window.orientation == 180)){
-							$wrapper.css('padding-top', Math.max((($window.height() - ($("article").first().outerHeight() + $footer.outerHeight())) / 2) - $nav.height(), 30) + 'px');
-                                                } else {
-                                                        if(isMobile){
-                                                            $wrapper.css('padding-top', ($("#titleBar").height()) + 'px')
-                                                        } else {
-                                                            /*var wH = $window.height();
-                                                            var aH = $("article").first().height();
-                                                            var nH = $nav.height();
-                                                            var newHeight = Math.max(((wH - aH - nH) / 2), 30);
-                                                            
-                                                            console.log(newHeight);
-                                                            $wrapper.css('padding-top', newHeight + 'px')*/
-                                                            $wrapper.css('padding-top', '40px')
-                                                            //$wrapper.css('padding-top', ((($window.height() - $("article").first().height()) / 2) - $nav.height()) + 'px');
-                                                        }
-							
-                                                }
-					};
+            }
+    // Body.
+            $body._resize = function() {
+                    resizeElementsOfPage();
+                    $body._reposition();
+            };
 
-				
+            setInterval(function() {
+                    resizeElementsOfPage();
+                    $body._reposition();
+            }, 500);
 
-				// Nav Links.
-					$nav_links.click(function(e) {
-						var t = $(this), href = t.attr('href'), id;
+            $body._reposition = function() {
+                    if (skel.vars.touch && (window.orientation == 0 || window.orientation == 180)){
+                            $wrapper.css('padding-top', Math.max((($window.height() - ($("article").first().outerHeight() + $footer.outerHeight())) / 2) - $nav.height(), 30) + 'px');
+                    } else {
+                            if(isMobile){
+                                $wrapper.css('padding-top', ($("#titleBar").height()) + 'px')
+                            } else {
+                                /*var wH = $window.height();
+                                var aH = $("article").first().height();
+                                var nH = $nav.height();
+                                var newHeight = Math.max(((wH - aH - nH) / 2), 30);
 
-						if (href.substring(0,1) == '#') {
+                                console.log(newHeight);
+                                $wrapper.css('padding-top', newHeight + 'px')*/
+                                $wrapper.css('padding-top', '40px')
+                                //$wrapper.css('padding-top', ((($window.height() - $("article").first().height()) / 2) - $nav.height()) + 'px');
+                            }
 
-							e.preventDefault();
-							e.stopPropagation();
+                    }
+            };
 
-							id = href.substring(1);
-							loadPage(href.substring(1))
 
-						}
 
-					});
+    // Nav Links.
+            $nav_links.click(function(e) {
+                    var t = $(this), href = t.attr('href'), id;
 
-				// Window.
-					$window
-						.resize(function() {
+                    if (href.substring(0,1) == '#') {
 
-							if (!isLocked)
-								$body._resize();
+                            e.preventDefault();
+                            e.stopPropagation();
 
-						});
+                            id = href.substring(1);
+                            loadPage(href.substring(1))
 
-					$window
-						.on('orientationchange', function() {
+                    }
 
-							if (!isLocked)
-								$body._reposition();
+            });
 
-						});
+    // Window.
+            $window
+                    .resize(function() {
 
-					if (skel.vars.IEVersion < 9)
-						$window
-							.on('resize', function() {
-								$wrapper.css('min-height', $window.height());
-							});
+                            if (!isLocked)
+                                    $body._resize();
 
-				// Fix: Placeholder polyfill.
-					$('form').placeholder();
+                    });
 
-				// Prioritize "important" elements on mobile.
-					skel.on('+mobile -mobile', function() {
-						$.prioritize(
-							'.important\\28 mobile\\29',
-							skel.breakpoint('mobile').active
-						);
-					});
-                                        
-                                        skel.on('+mobile', function() {
-						isMobile = true;
-					});
+            $window
+                    .on('orientationchange', function() {
 
-				// CSS polyfills (IE<9).
-					if (skel.vars.IEVersion < 9)
-						$(':last-child').addClass('last-child');
+                            if (!isLocked)
+                                    $body._reposition();
 
-				// Init.
-					$window
-						.trigger('resize');
+                    });
 
-					if (hash) {
-						loadPage(hash)
-                                            } else {
-                                            loadPage(firstPanelId)
-                                        }
+            if (skel.vars.IEVersion < 9)
+                    $window
+                            .on('resize', function() {
+                                    $wrapper.css('min-height', $window.height());
+                            });
 
-					$wrapper.fadeTo(400, 1.0);
-                                        
-                                        
-                                     
+    // Fix: Placeholder polyfill.
+            $('form').placeholder();
+
+    // Prioritize "important" elements on mobile.
+            skel.on('+mobile -mobile', function() {
+                    $.prioritize(
+                            '.important\\28 mobile\\29',
+                            skel.breakpoint('mobile').active
+                    );
+            });
+
+            skel.on('+mobile', function() {
+                    isMobile = true;
+            });
+
+    // CSS polyfills (IE<9).
+            if (skel.vars.IEVersion < 9)
+                    $(':last-child').addClass('last-child');
+
+    // Init.
+            $window
+                    .trigger('resize');
+
+            if (hash) {
+                    loadPage(hash)
+                } else {
+                loadPage(firstPanelId)
+            }
+
+            $wrapper.fadeTo(400, 1.0);
 	});
 
 })(jQuery);
@@ -234,6 +235,14 @@ function createNavbar(){
 
 // ************** Functions for ajax Requests ***********************
 
+    // when back / forward button is pressed  		  
+   $(window).bind("popstate", function(e) {
+       var state = e.originalEvent.state;
+       if(state) {
+           location.reload();
+       }
+   });
+                        
 function loadPage(id){
         if(id == ""){
             return false;
@@ -253,12 +262,13 @@ function loadPage(id){
         $nav_links.removeClass('active');
         $nav_links.filter('[href="#' + pageName + '"]').addClass('active');
 
+        
     // Change hash.
         if (id == firstPanelId)
-                window.location.hash = '#';
+            window.history.pushState({"html":pageName, "pageTitle":pageName},"", "#");
         else
-                window.location.hash = '#' + id;
-
+            window.history.pushState({"html":pageName, "pageTitle":pageName},"", "#" + id);
+        
         id = pageName;
         
         $.ajax({
@@ -274,9 +284,25 @@ function loadPage(id){
                             // replace HTML of panel
                             $("#main").html(data.toString());
                             $("article").first().hide();
+                            
+                            // Get Javascript for file
+                            $.ajax({
+                                    url: "pages/js/" + id + ".js",
+                                    method: 'GET',
+                                    dataType: "html",
+                                    error: function()
+                                    {
+                                        alert("no File Found");
+                                    },
+                                    success : function(data) {
+                                                // evaluate js code
+                                                eval(data);
+
+                                        }
+                            });
 
                             // evaluate js code
-                            eval($("#main script").first().innerHTML);
+                            //eval($("#main script").first().innerHTML);
 
                             // Set new active.
                             activePanelId = id;
@@ -307,6 +333,7 @@ function loadPage(id){
                     });
                 }
         });
+        
     }
     
 function refreshJumplinks(){
@@ -449,6 +476,66 @@ function updateChatNotifNumber(notifNumber){
     }
 }
 
+function confirmHomeScreenPickupJoin(pickupID){
+    var csrftoken = getCookie("csrftoken");  
+    $.post(baseDomain + "/api/pickup-dates/" + pickupID + "/add/",
+                    {
+                            name: "",
+                            description: "",
+                            csrfmiddlewaretoken: csrftoken
+                    },
+                    function(data, status){
+                            if(status){
+                                    alert("Joined!");
+                                    location.reload();
+                            }
+    })  
+    .fail(function() {
+        alert( "Konnte nicht beitreten..." );
+    });
+}
+
+
+function confirmHomeScreenPickupLeave(pickupID){
+    var csrftoken = getCookie("csrftoken");  
+    $.post(baseDomain + "/api/pickup-dates/" + pickupID + "/remove/",
+                    {
+                            name: "",
+                            description: "",
+                            csrfmiddlewaretoken: csrftoken
+                    },
+                    function(data, status){
+                            if(status){
+                                    alert("Pickup left :(");
+                                    location.reload();
+                            }
+    })  
+    .fail(function() {
+        alert( "Couldn't leave pickup :O" );
+    });
+}
+
+
+// is Number in Array
+function isNumberInArray(curNum, curArr){
+    if (jQuery.inArray(curNum, curArr) == -1){
+        return false;
+    } else {
+    return true;
+    }
+}
+
+function getStoreData(storeID){
+    return $.grep(storedStoreData, function(e){ return e.id == storeID; })[0];
+}
+
+//map user-array to their infos
+function mapUserArray(curUserArray){
+    return curUserArray.map(function(id) {
+                return $.grep(storedUserData, function(e){ return e.id == id; })[0];
+            });
+}
+
 //gets value of a cookie
 function getCookie(name) {
     var value = "; " + document.cookie;
@@ -472,11 +559,75 @@ function getUrlVar(name){
     return getUrlVars()[name];
 }
 
+function getAllUserData(){
+	$.ajax({
+                cache: false,
+                url: baseDomain + "/api/users/",
+		method: 'GET',
+		dataType: "json",
+		success : function(data) {
+                    storedUserData = data;
+		}
+	});
+}
+function getAllStoreData(){
+	$.ajax({
+                cache: false,
+                url: baseDomain + "/api/stores/",
+		method: 'GET',
+		dataType: "json",
+		success : function(data) {
+                    storedStoreData = data;
+		}
+	});
+}
+
+function joinGroup(groupID){
+    var csrftoken = getCookie("csrftoken");
+    
+    	$.post(baseDomain + "/api/groups/" + groupID + "/join/",
+			{
+				name: "",
+				description: "",
+                                csrfmiddlewaretoken: csrftoken
+			},
+			function(data, status){
+				if(status){
+					alert("Gruppe beigetreten!")
+                                        loadPage("homeScreen?groupID=" + groupID)
+				}
+	})  
+            .fail(function() {
+                alert( "Konnte nicht beitreten..." );
+            });
+}
+
+function leaveGroup(groupID){
+    var csrftoken = getCookie("csrftoken");   
+    $.post(baseDomain + "/api/groups/" + groupID + "/leave/",
+                    {
+                            name: "",
+                            description: "",
+                            csrfmiddlewaretoken: csrftoken
+                    },
+                    function(data, status){
+                            if(status){
+                                    location.reload();
+                            }
+    })  
+        .fail(function() {
+            alert( "Gruppe verlassen nicht möglich..." );
+        });
+}
 
 
 /************* Init Stuff ******/
 
-$( document ).ready(function() {  
+$( document ).ready(function() {
+        getAllUserData();
+        getAllStoreData();
+        
+        
         createNavbar();
         $.ajaxSetup({
             xhrFields: {
