@@ -25,6 +25,7 @@ function getStoresForCurrentGroup(){
 function displayGroupInfo(data){
     $("#homeScreen-groupName").html(data["name"]);
     $("#homeScreen-groupDesc").html(data["description"]);
+    setDocumentTitle(data["name"]);
 }
 
 // get User Group
@@ -58,8 +59,7 @@ function displayPickupInfo(pickUps){
 }
 
 // get Pickups
-function getAndDisplayPickups(){
-        
+var pickupUpdateFunc = function(){
         $.ajax({
                 cache: false,
                 url: baseDomain + "/api/pickup-dates/",
@@ -77,20 +77,32 @@ $("#homescreen-createStoreButton").click(function(e) {
 });
 
 $( document ).ready(function() {
-    
-    currentGroup = getUrlVar("groupID");
 
-    if(getUrlVar("groupID") == undefined){
-        currentGroup = 1;
+    
+    if(getUrlVar("groupID") != undefined){
+        currentGroup = getUrlVar("groupID");
     }
     
-    getStoresForCurrentGroup();
-    getThisGroup();
-    getAndDisplayPickups();
+    if(currentGroup != null){
+        getStoresForCurrentGroup();
+        getThisGroup();
+
+        $("#homescreen-pickups").pickupList();
+        $("#homescreen-pickups").pickupList("setOptions", {headerTitle: "Your Pick-Ups", infoToShow: "store"});
+        $("#homescreen-pickups").pickupList("setUpdateFunction", pickupUpdateFunc);
+        $("#homescreen-pickups").pickupList("update");
     
+    } else {
+        
+        if(loggedInUserData["id"] != null){
+            $("#homeScreen-groupName").html("Please pick community first...");
+            setTimeout(function(){loadPage("profile");}, 2000);
+        } else {
+            $("#homeScreen-groupName").html("Please login first...");
+            setTimeout(function(){loadPage("login");}, 2000);
+        }
+    }
     
-    $("#homescreen-pickups").pickupList();
-    $("#homescreen-pickups").pickupList("setOptions", {headerTitle: "Your Pick-Ups", infoToShow: "store"});
     
     //getStoreData(getUrlVar("id"));
 });

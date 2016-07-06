@@ -5,7 +5,9 @@ function showUserData(data){
     console.log(data)
     $("#profile-name-header").html(data["first_name"] + " " + data["last_name"]);
     $("#profile-name-subheader").html(data["display_name"]);
-    $("#profile-content-email").html(data["email"]);    
+    $("#profile-content-email").html(data["email"]);   
+    
+    setDocumentTitle(data["first_name"]);
 }
 
 function getAndShowUserData(userID){

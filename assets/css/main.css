@@ -174,7 +174,14 @@
           position:absolute;
           right: 0px;
           top: 0px;
-          height: 100%;              
+          height: 100%;
+          width: 5em;
+          text-align: center;
+        }
+        
+        .pickupList-pickup .button.disabled{
+          cursor: auto;
+          background-color: #888888;
         }
         
         

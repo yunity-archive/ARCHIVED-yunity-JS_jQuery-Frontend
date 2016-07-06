@@ -269,6 +269,8 @@ function loadPage(id){
         else
             window.history.pushState({"html":pageName, "pageTitle":pageName},"", "#" + id);
         
+        setDocumentTitle(pageName.charAt(0).toUpperCase() + pageName.slice(1));
+        
         id = pageName;
         
         $.ajax({
@@ -290,10 +292,6 @@ function loadPage(id){
                                     url: "pages/js/" + id + ".js",
                                     method: 'GET',
                                     dataType: "html",
-                                    error: function()
-                                    {
-                                        alert("no File Found");
-                                    },
                                     success : function(data) {
                                                 // evaluate js code
                                                 eval(data);
@@ -426,6 +424,9 @@ function logOut(){
             data: {"csrfmiddlewaretoken": csrftoken, "email": "", "password": ""},
             success : function() {
                         loggedInUserData["display_name"] = "";
+                        if(isMobile){
+                            location.reload();
+                        }
                         updateLoggedInNavigations();
                 }
     });
@@ -476,7 +477,7 @@ function updateChatNotifNumber(notifNumber){
     }
 }
 
-function confirmHomeScreenPickupJoin(pickupID){
+function confirmPickupJoin(pickupID, pickupListID){
     var csrftoken = getCookie("csrftoken");  
     $.post(baseDomain + "/api/pickup-dates/" + pickupID + "/add/",
                     {
@@ -486,17 +487,16 @@ function confirmHomeScreenPickupJoin(pickupID){
                     },
                     function(data, status){
                             if(status){
-                                    alert("Joined!");
-                                    location.reload();
+                                    $("#" + pickupListID).pickupList("update");
                             }
     })  
     .fail(function() {
-        alert( "Konnte nicht beitreten..." );
+        alert( "Couldn't join!" );
     });
 }
 
 
-function confirmHomeScreenPickupLeave(pickupID){
+function confirmPickupLeave(pickupID, pickupListID){
     var csrftoken = getCookie("csrftoken");  
     $.post(baseDomain + "/api/pickup-dates/" + pickupID + "/remove/",
                     {
@@ -506,8 +506,7 @@ function confirmHomeScreenPickupLeave(pickupID){
                     },
                     function(data, status){
                             if(status){
-                                    alert("Pickup left :(");
-                                    location.reload();
+                                    $("#" + pickupListID).pickupList("update");
                             }
     })  
     .fail(function() {
@@ -618,6 +617,10 @@ function leaveGroup(groupID){
         .fail(function() {
             alert( "Gruppe verlassen nicht möglich..." );
         });
+}
+
+function setDocumentTitle(titleString){
+    document.title = titleString + " | Yunity"
 }
 
 

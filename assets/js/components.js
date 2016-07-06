@@ -23,7 +23,8 @@ function renewDropdowns(){
     var pickUpData =[],
         pickupArea,
         currentInstance,
-        sortKeyword;
+        sortKeyword,
+        updateFunction;
     
     var settings;
         
@@ -51,6 +52,12 @@ function renewDropdowns(){
                     });
             pickUpData = data;
             _update();
+        },
+        setUpdateFunction : function(data) {
+             updateFunction = data;
+        },
+        update : function() {
+             updateFunction();
         },
         clear : function() {
             _clear();
@@ -153,7 +160,7 @@ function renewDropdowns(){
                 var storeData = getStoreData(entry["store"]);
                 info = '<a class="jumplink" href="#store?id=' + storeData["id"] + '">' + storeData["name"] + '</a>';
             }
-            _addPickup(entry["id"], timeToDisplay, info, entry["collector_ids"]);
+            _addPickup(entry["id"], timeToDisplay, info, entry["collector_ids"], entry["max_collectors"]);
         };
         
     var _isLoggedUserMember = function(people){
@@ -161,13 +168,17 @@ function renewDropdowns(){
     };
     
     // adds a pickup at the end of the list
-    var _addPickup = function(id, time, info, people) {
-            
+    var _addPickup = function(id, time, info, people, maxCollectors) {
             var buttonsRight = "";
+            var collectorsNumber = people.length;
+            var collectorAmountString = '<span style="font-size: 10pt;">('+collectorsNumber + "/" + maxCollectors + ')</span>';
+            
             if(_isLoggedUserMember(people)){
-                buttonsRight = '<div class="button small leave" onclick="confirmHomeScreenPickupLeave('+id+')">leave</div></div>';
+                buttonsRight = '<div class="button small leave" onclick="confirmPickupLeave('+id+",'" + currentInstance.attr("id") + "'"+ ')">leave</div></div>';
+            } else if(collectorsNumber >= maxCollectors){
+                buttonsRight = '<div class="button small disabled")">full!</div></div>';
             } else {
-                buttonsRight = '<div class="button small" onclick="confirmHomeScreenPickupJoin('+id+')">join</div></div>';
+                buttonsRight = '<div class="button small" onclick="confirmPickupJoin('+id+",'" + currentInstance.attr("id") + "'"+ ')">join</div></div>';
             }
             
             people = mapUserArray(people);
@@ -179,7 +190,7 @@ function renewDropdowns(){
                                 '<div class="leftSide">' +
                                     '<div class="2u 12u(mobile) time">' + time + '</div> ' +
                                     '<div class="10u store">' + info + '</div>' +
-                                    '<div class="people">' + peopleString + '</div>' +
+                                    '<div class="people">' + peopleString + collectorAmountString +'</div>' +
                                 '</div>' +
                                 '<div id="pickupList-pickup-Buttons'+id+'">' + buttonsRight + '</div>';
             pickupArea.append(newPickupStr);

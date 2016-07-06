@@ -34,6 +34,7 @@ function displayStoreData(data){
     console.log(data);
     $("#store-storeName").html(data["name"]);
     $("#store-storeInfo").html(data["description"])
+    setDocumentTitle(data["name"]);
 }
 
 $("#store-adress-link").click(function( event ) {
@@ -42,7 +43,7 @@ $("#store-adress-link").click(function( event ) {
 });
 
 // get Pickups
-function getAndDisplayPickups(){
+var pickupUpdateFunc = function(){
         
         $.ajax({
                 cache: false,
@@ -62,7 +63,9 @@ $( document ).ready(function() {
     
     $("#store-pickups").pickupList();
     $("#store-pickups").pickupList("setOptions", {storeID: getUrlVar("id"), infoToShow: ""});
-    getAndDisplayPickups();
+    $("#store-pickups").pickupList("setUpdateFunction", pickupUpdateFunc);
+    $("#store-pickups").pickupList("update");
+    //getAndDisplayPickups();
     
 });
 	  		

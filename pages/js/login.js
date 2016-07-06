@@ -27,6 +27,11 @@ $('#login-pw-input').keypress(function (e) {
   }
 });
 
+$('#login-loginButton').click(function (e) {
+  loginUser();
+});
+
+
 $( document ).ready(function() {
     $('#login-email-input').focus();
 });
