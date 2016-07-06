@@ -17,6 +17,10 @@
 				href = $this.attr('href'),
 				target = $this.attr('target'),
 				iconClass = $this.attr('class');
+                                showWhenLoggedOut = "";
+                        if($this.hasClass("hideWhenLoggedOut")){
+                            showWhenLoggedOut = "hideWhenLoggedOut";
+                        }
                         if($this.attr('id')){
                                 newID = 'id="navbar_' + $this.attr('id') + '"';
                             } else {
@@ -25,7 +29,7 @@
 
 			b.push(
 				'<a ' + newID +
-					' class="link jumplink depth-' + indent + '"' +
+					' class="link jumplink ' + showWhenLoggedOut + ' depth-' + indent + '"' +
 					( (typeof target !== 'undefined' && target != '') ? ' target="' + target + '"' : '') +
 					( (typeof href !== 'undefined' && href != '') ? ' href="' + href + '"' : '') +
 				'>' +

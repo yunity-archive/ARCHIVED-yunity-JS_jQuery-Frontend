@@ -46,7 +46,7 @@ function isPickupStoreInGroup(storeID){
 }
 
 // filter out user pickups and display them
-function displayPickupInfo(pickUps){
+function displayPickupInfo(pickUps, pickupListInstance){
     var pickUpData = [];
     pickUps.forEach(function(entry, index) {
         if(isNumberInArray(loggedInUserData["id"], entry["collector_ids"])){
@@ -55,18 +55,18 @@ function displayPickupInfo(pickUps){
             }
         }
     });
-    $("#homescreen-pickups").pickupList("setData", pickUpData);
+    pickupListInstance.pickupList("setData", pickUpData);
 }
 
 // get Pickups
-var pickupUpdateFunc = function(){
+var pickupUpdateFunc = function(pickupListInstance){
         $.ajax({
                 cache: false,
                 url: baseDomain + "/api/pickup-dates/",
 		method: 'GET',
 		dataType: "json",
 		success : function(data) {
-                    displayPickupInfo(data);
+                    displayPickupInfo(data, pickupListInstance);
 		}
         });
 }
@@ -90,7 +90,6 @@ $( document ).ready(function() {
         $("#homescreen-pickups").pickupList();
         $("#homescreen-pickups").pickupList("setOptions", {headerTitle: "Your Pick-Ups", infoToShow: "store"});
         $("#homescreen-pickups").pickupList("setUpdateFunction", pickupUpdateFunc);
-        $("#homescreen-pickups").pickupList("update");
     
     } else {
         

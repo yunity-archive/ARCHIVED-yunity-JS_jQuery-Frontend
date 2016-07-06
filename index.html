@@ -21,7 +21,7 @@
                 <link rel="apple-touch-icon" href="assets/icons/apple-homescreen-icon.png"/>
                 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
                 
-                <link rel="stylesheet" type="text/css" href="assets/datepicker/jquery.datetimepicker.css"/>
+                <link rel="stylesheet" type="text/css" href="assets/components/datepicker/jquery.datetimepicker.css"/>
 	</head>
 	<body>
 
@@ -36,9 +36,9 @@
 				<!-- Nav -->
 					<nav id="nav">
 						<a href="#homeScreen" class="icon yunity-logo"><span>Homescreen</span></a>
-						<a href="#profile" id="navProfile" class="icon fa-user"><span>You!</span></a>
+						<a href="#profile" id="navProfile" class="icon fa-user hideWhenLoggedOut"><span>You!</span></a>
 						<!--<a href="#store" id="navStore" class="icon fa-home"><span>Store</span></a>-->
-						<a href="#chat" id="navChat" id="navChat" class="icon fa-comments" style="position: relative"><span>Chat</span></a>
+						<a href="#chat" id="navChat" class="icon fa-comments hideWhenLoggedOut" style="position: relative"><span>Chat</span></a>
 						<a href="#faq" class="icon fa-question-circle-o"><span>FAQ</span></a>
 						<a href="#login" id="logStatus" class="icon fa-sign-in "><span>Login</span></a>						
 					</nav>
@@ -77,8 +77,8 @@
 			<!--[if lte IE 8]><script src="assets/js/ie/respond.min.js"></script><![endif]-->
                         
                         <!-- DatePicker Plugin -->
-                        <script src="assets/datepicker/jquery.datetimepicker.full.js"></script>
-			<script src="assets/js/components.js"></script>
+                        <script src="assets/components/datepicker/jquery.datetimepicker.full.js"></script>
+			<script src="assets/components/components.js"></script>
 			<script src="assets/js/main.js"></script>
 
 	</body>

@@ -1,6 +1,19 @@
 @import url("http://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,300italic,400italic");
 @import url("font-awesome.min.css");
 
+
+    /******** remove link decorations ********/
+    a {
+        text-decoration: none;
+        color: #333333;
+    }
+    
+    #main a:hover :not(.iconButton){
+        text-decoration: none;
+        color: #006000;
+        text-decoration: underline;
+    }
+    
     /************* dropdown Menus ************/
     
     .dropdown {
@@ -8,7 +21,7 @@
     }
     
     .dropdown li span{
-        padding: .5em;
+        padding: 1em;
     }
 
     .dropdown:hover{
@@ -54,48 +67,53 @@
         background: #005800;
     }
 
+    /********* icon Buttons ******/
 
-        .iconButton {
-            cursor: pointer;
-            color: #006000;
-        }
-        
-        .iconButton:hover {
-            color: #009900;
-        }
-        
-        .iconButton:active {
-            color: #00FF00;
-        }
-	.circle {
-		border-radius: 50%;
-		/* width and height can be anything, as long as they're equal */
-	}
-	
-	.circle.notification {
-		background-color: #760306;
-		width: 30px;
-		height: 30px;
-		position: absolute;
-		right: -10px;
-		top: 0px; 
-		border-style: solid;
-                border-color: #ff0000;
-                border-width: 1px;
-                color: white;
-                text-align: center;
-                padding-top: -1em;
-                font-size: 20px;
-                display: inline-block;
-                line-height: 1.4em;
-	}
+    .iconButton {
+        cursor: pointer;
+        color: #006000;
+    }
 
-	.yunity-logo {
-		background-image: url("../icons/yunityLogoOnly1.svg");
-		background-repeat: no-repeat;
-		background-position: 0px 25px;
-		background-size: auto 40%;
-	}
+    .iconButton:hover {
+        color: #009900;
+    }
+
+    .iconButton:active {
+        color: #00FF00;
+    }
+    
+    /****** notifications ******/
+    .circle {
+            border-radius: 50%;
+            /* width and height can be anything, as long as they're equal */
+    }
+
+    .circle.notification {
+            background-color: #760306;
+            width: 30px;
+            height: 30px;
+            position: absolute;
+            right: -10px;
+            top: 0px; 
+            border-style: solid;
+            border-color: #ff0000;
+            border-width: 1px;
+            color: white;
+            text-align: center;
+            padding-top: -1em;
+            font-size: 20px;
+            display: inline-block;
+            line-height: 1.4em;
+    }
+
+        
+    /**** icon-like yunity image ****/
+    .yunity-logo {
+            background-image: url("../icons/yunityLogoOnly1.svg");
+            background-repeat: no-repeat;
+            background-position: 0px 25px;
+            background-size: auto 40%;
+    }
 	
           
     /***************** homeScreen *******************/
@@ -332,8 +350,9 @@
         height: 100%;        
     }
                       
-    /************ Profile **********
+    /************ Profile **********/
 	
+    /*
     .profile-community {
     	width: 100%;
     	padding: 0.3em;
@@ -344,7 +363,7 @@
     
     .profile-community:hover {
 	    background-color:#F5F5F5;
-	}
+	}*/
 
 /*
 	Astral by HTML5 UP

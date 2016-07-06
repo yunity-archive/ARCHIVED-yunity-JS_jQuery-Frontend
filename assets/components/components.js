@@ -18,6 +18,14 @@ function renewDropdowns(){
 }
 
 /************************* PickupList Component *************************************/
+
+/**
+ * Pickup List
+ * 
+ * To be created, it needs to be called blanc once "*.pickupList()", 
+ * then, it needs to have an update-function, which it can call to update.
+ * the update
+ */
 (function( $ ){
 
     var pickUpData =[],
@@ -40,7 +48,8 @@ function renewDropdowns(){
                     showFilterButton: false,
                     storeID: -1,
                     headerTitle: 'Pick-Ups',
-                    maxHeight: '20em' 
+                    maxHeight: '20em',
+                    filter: '',
             };
             currentInstance = this;
             _recreateMenu();
@@ -55,9 +64,10 @@ function renewDropdowns(){
         },
         setUpdateFunction : function(data) {
              updateFunction = data;
+             updateFunction(currentInstance);
         },
         update : function() {
-             updateFunction();
+             updateFunction(currentInstance);
         },
         clear : function() {
             _clear();
@@ -89,7 +99,16 @@ function renewDropdowns(){
         var addPickupButton = "";
         
         if(settings.showFilterButton){
-            filterButton = '<ul class="dropdown"><li><span>Filter <i class="fa fa-filter" aria-hidden="true"></i></span><ul><li><a href="#">Date</a></li><li><a href="#">Place</a></li></ul></li></ul>';
+            var openPanelActive = '';
+            var joinedPanelActive = '';
+            
+            if(settings.filter == 'open'){
+                openPanelActive = ' style="background-color: #004400" ';
+            }
+            if(settings.filter == 'joined'){
+                joinedPanelActive = ' style="background-color: #004400" ';
+            }
+            filterButton = '<ul class="dropdown"><li><span>Filter <i class="fa fa-filter" aria-hidden="true"></i></span><ul><li><a '+joinedPanelActive+'class="pickup-filter-joined">joined</a></li><li><a '+openPanelActive+' class="pickup-filter-open">open</a></li></ul></li></ul>';
         }
         if(settings.showSortButton){
             if(settings.reversed)
@@ -104,6 +123,27 @@ function renewDropdowns(){
         pickupArea = $('<div class="pickupList-pickupArea" style="max-height: '+ settings.maxHeight +';"></div>');
         currentInstance.append(pickupArea);
         renewDropdowns();
+        
+        if(settings.showFilterButton){
+            $("#" + currentInstance.attr("id") + " .pickup-filter-joined").click(function(){
+                if(settings.filter == 'joined'){
+                    settings.filter = '';
+                } else {
+                    settings.filter = 'joined';
+                }
+                _recreateMenu();
+                _update();
+            });
+            $("#" + currentInstance.attr("id") + " .pickup-filter-open").click(function(){
+                if(settings.filter == 'open'){
+                    settings.filter = '';
+                } else {
+                    settings.filter = 'open';
+                }
+                _recreateMenu();
+                _update();
+            });
+        }
     };
     
     // comparable for sorting algorithm
@@ -174,10 +214,14 @@ function renewDropdowns(){
             var collectorAmountString = '<span style="font-size: 10pt;">('+collectorsNumber + "/" + maxCollectors + ')</span>';
             
             if(_isLoggedUserMember(people)){
+                if(settings.filter == 'open') return;
                 buttonsRight = '<div class="button small leave" onclick="confirmPickupLeave('+id+",'" + currentInstance.attr("id") + "'"+ ')">leave</div></div>';
             } else if(collectorsNumber >= maxCollectors){
+                if(settings.filter == 'joined') return;
+                if(settings.filter == 'open') return;
                 buttonsRight = '<div class="button small disabled")">full!</div></div>';
             } else {
+                if(settings.filter == 'joined') return;
                 buttonsRight = '<div class="button small" onclick="confirmPickupJoin('+id+",'" + currentInstance.attr("id") + "'"+ ')">join</div></div>';
             }
             
@@ -210,18 +254,17 @@ function renewDropdowns(){
 
 })( jQuery );
 
-
 /************************* ChatWindowBig Component *************************************/
-/*
+/**
  * Chat with userlist, bubble-message and so on...
- * 
  * BIG TODO!
  */
 (function( $ ){
     
     var recipients = [],
         currentRecipient = null,
-        currentInstance;
+        currentInstance,
+        updateFunction;
         
         
     var settings = {

@@ -6,14 +6,18 @@ function searchForAdress(adressString){
     window.open('https://www.google.de/maps?q='+adressString,'_blank');
 }
 
-// Change Strings for Google Search
+/**
+ * Changes a String in a way that google-maps can handle it
+ * @param {String} Adress-String
+ * @returns {String}
+ */
 function replaceStringForSearch(res) {
-    res = res.replace(" ", "+"); 
+    res = res.replace(/ /g,'')
     res = res.replace("-", "+"); 
     res = res.replace("&", "+"); 
     res = res.replace("<br>", "+");
     res = res.replace("<br/>", "+");
-    res = res.replace(" ", "+");   
+    
     return res;
 }
 
@@ -43,8 +47,7 @@ $("#store-adress-link").click(function( event ) {
 });
 
 // get Pickups
-var pickupUpdateFunc = function(){
-        
+var pickupUpdateFunc = function(pickupListInstance){
         $.ajax({
                 cache: false,
                 url: baseDomain + "/api/pickup-dates/",
@@ -53,7 +56,7 @@ var pickupUpdateFunc = function(){
 		success : function(data) {
                     var storeID = getUrlVar("id");
                     data = $.grep(data, function(e){ return e.store == storeID; });
-                    $("#store-pickups").pickupList("setData", data);
+                    pickupListInstance.pickupList("setData", data);
 		}
         });
 }
@@ -62,10 +65,7 @@ $( document ).ready(function() {
     getStoreData(getUrlVar("id"));
     
     $("#store-pickups").pickupList();
-    $("#store-pickups").pickupList("setOptions", {storeID: getUrlVar("id"), infoToShow: ""});
-    $("#store-pickups").pickupList("setUpdateFunction", pickupUpdateFunc);
-    $("#store-pickups").pickupList("update");
-    //getAndDisplayPickups();
-    
+    $("#store-pickups").pickupList("setOptions", {storeID: getUrlVar("id"), infoToShow: "", showFilterButton: true});
+    $("#store-pickups").pickupList("setUpdateFunction", pickupUpdateFunc);    
 });
 	  		

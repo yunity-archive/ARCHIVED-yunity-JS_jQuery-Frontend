@@ -4,6 +4,7 @@
 	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
 */
 
+/* Here, you can define how fast the window should be animated */
 var settings = {
 
         // Speed to resize panel.
@@ -21,34 +22,34 @@ var settings = {
         // Maximum point size.
                 sizeMax: 18
     };
-    
-    
+
+
 var $window = $(window),
-    $body = $('body');;    
-     
+    $body = $('body');
+
 var isMobile = false,
     $body,
+    $window = $(window),
     $main,
-    $panels,
     $hbw,
     $footer,
     $wrapper,
     $nav,
     $form,
-    panels,
     hash,
     isLocked = false,
     activePanelId = null,
     firstPanelId = 'homeScreen',
     baseDomain = "",
-    
+
     loggedInUserData,
     storedStoreData,
     storedUserData,
-    currentGroup;
-    
-   
-(function($) {    
+    currentGroup,
+    pageRefreshed = true;
+
+
+(function($) {
     // ********* Page Load Functions *************
 	$window.on('load', function() {
 
@@ -65,27 +66,22 @@ var isMobile = false,
 					}
 				}
 			})
-			
-            
+
+
             $body = $('body');
             $main = $('#main');
-            $panels = $main.find('.panel');
             $hbw = $('html,body,window');
             $footer = $('#footer');
             $wrapper = $('#wrapper');
             $nav = $('#nav'), $nav_links = $nav.find('a');
             $form = $('form');
-            panels = [];
             hash = window.location.hash.substring(1);
 
-
-            
-
+            /* resize fonts and main-div*/
             function resizeElementsOfPage(){
                     var factor = ($window.width() * $window.height()) / (1440 * 900);
                     $body.css('font-size', Math.min(Math.max(Math.floor(factor * settings.sizeFactor), settings.sizeMin), settings.sizeMax) + 'pt');
                     $main.height($("article").first().outerHeight());
-
             }
     // Body.
             $body._resize = function() {
@@ -93,6 +89,7 @@ var isMobile = false,
                     $body._reposition();
             };
 
+            /* in case something loaded via ajax */
             setInterval(function() {
                     resizeElementsOfPage();
                     $body._reposition();
@@ -105,17 +102,8 @@ var isMobile = false,
                             if(isMobile){
                                 $wrapper.css('padding-top', ($("#titleBar").height()) + 'px')
                             } else {
-                                /*var wH = $window.height();
-                                var aH = $("article").first().height();
-                                var nH = $nav.height();
-                                var newHeight = Math.max(((wH - aH - nH) / 2), 30);
-
-                                console.log(newHeight);
-                                $wrapper.css('padding-top', newHeight + 'px')*/
                                 $wrapper.css('padding-top', '40px')
-                                //$wrapper.css('padding-top', ((($window.height() - $("article").first().height()) / 2) - $nav.height()) + 'px');
                             }
-
                     }
             };
 
@@ -123,7 +111,7 @@ var isMobile = false,
 
     // Nav Links.
             $nav_links.click(function(e) {
-                    var t = $(this), href = t.attr('href'), id;
+                    var href = $(this).attr('href'), id;
 
                     if (href.substring(0,1) == '#') {
 
@@ -140,17 +128,14 @@ var isMobile = false,
     // Window.
             $window
                     .resize(function() {
-
                             if (!isLocked)
-                                    $body._resize();
-
+                                $body._resize();
                     });
 
             $window
                     .on('orientationchange', function() {
-
                             if (!isLocked)
-                                    $body._reposition();
+                                $body._reposition();
 
                     });
 
@@ -196,7 +181,7 @@ var isMobile = false,
 
 // ********* Off-Canvas Navigation. **************
 function createNavbar(){
-    
+
     // Title Bar.
         $(
             '<div id="titleBar">' +
@@ -205,12 +190,12 @@ function createNavbar(){
             '</div>'
         )
             .appendTo($body);
-    
+
     // Navigation Panel.
         $(
             '<div id="navPanel">' +
                     '<nav>' +
-                            $('#nav').navList() +
+                            $('#nav').navList() + //defined in util.js
                     '</nav>' +
             '</div>'
         )
@@ -235,19 +220,26 @@ function createNavbar(){
 
 // ************** Functions for ajax Requests ***********************
 
-    // when back / forward button is pressed  		  
-   $(window).bind("popstate", function(e) {
-       var state = e.originalEvent.state;
-       if(state) {
-           location.reload();
-       }
-   });
-                        
+
+    // when back / forward button is pressed
+    $(window).bind("popstate", function(e) {
+        var state = e.originalEvent.state;
+        if(state) {
+            location.reload();
+        }
+    });
+
+   // when hash changed in URL
+    $(window).bind('hashchange', function() {
+        location.reload();
+    });
+
+// load new page with ajax
 function loadPage(id){
         if(id == ""){
             return false;
         }
-        
+
         var pageName = id.split("?")[0];
 
         instant = false;
@@ -262,19 +254,22 @@ function loadPage(id){
         $nav_links.removeClass('active');
         $nav_links.filter('[href="#' + pageName + '"]').addClass('active');
 
-        
-    // Change hash.
-        if (id == firstPanelId)
-            window.history.pushState({"html":pageName, "pageTitle":pageName},"", "#");
-        else
-            window.history.pushState({"html":pageName, "pageTitle":pageName},"", "#" + id);
-        
+
+        // Create new history object
+        var pageURL = "#";
+        if(id != firstPanelId){
+            pageURL = "#" + id;
+        }
+        if(pageRefreshed){
+            window.history.replaceState({"html":pageName, "pageTitle":pageName}, "", pageURL);
+            pageRefreshed = false;
+        } else {
+            window.history.pushState({"html":pageName, "pageTitle":pageName}, "", pageURL);
+        }
+
         setDocumentTitle(pageName.charAt(0).toUpperCase() + pageName.slice(1));
-        
-        id = pageName;
-        
         $.ajax({
-                url: "pages/" + id + ".html",
+                url: "pages/" + pageName + ".html",
                 method: 'GET',
                 dataType: "html",
                 success : function(data) {
@@ -286,10 +281,10 @@ function loadPage(id){
                             // replace HTML of panel
                             $("#main").html(data.toString());
                             $("article").first().hide();
-                            
+
                             // Get Javascript for file
                             $.ajax({
-                                    url: "pages/js/" + id + ".js",
+                                    url: "pages/js/" + pageName + ".js",
                                     method: 'GET',
                                     dataType: "html",
                                     success : function(data) {
@@ -299,11 +294,8 @@ function loadPage(id){
                                         }
                             });
 
-                            // evaluate js code
-                            //eval($("#main script").first().innerHTML);
-
                             // Set new active.
-                            activePanelId = id;
+                            activePanelId = pageName;
 
                             // Force scroll to top.
                             $hbw.animate({
@@ -331,26 +323,23 @@ function loadPage(id){
                     });
                 }
         });
-        
     }
-    
+
+// refresh the loadPage function of jumplinks, when they are added to the document later
 function refreshJumplinks(){
-            var $jumplinks = $('.jumplink');
-            $jumplinks.click(function(e) {
-                var t = $(this), href = t.attr('href'), id;
+    $('.jumplink').click(function(e) {
+        var href = $(this).attr('href');
 
-                if (href.substring(0,1) == '#') {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        id = href.substring(1);
-                        loadPage(href.substring(1));
-
-                }
-            });
-        }	
+        if (href.substring(0,1) == '#') {
+                e.preventDefault();
+                e.stopPropagation();
+                loadPage(href.substring(1));
+        }
+    });
+}
 
 /*********** Login Functions **********/
-                
+
 function loginUserError(data, status){
 	alert("Error!");
 }
@@ -360,20 +349,15 @@ function updateLoggedInNavigations(){
     if(loggedInUserData["display_name"] == ""){
             // not logged in
             console.log("nicht eingeloggt");
-            
-            
+
+
             // change Desktop Nav
             $("#logStatus").removeClass("fa-sign-out");
             $("#logStatus").addClass("fa-sign-in").attr("href", "#login");
             $("#logStatus span").html("Login");
-            
-            $("#navStore").hide();
-            $("#navbar_navStore").hide();
-            $("#navProfile").hide();
-            $("#navbar_navProfile").hide();
-            $("#navChat").hide();
-            $("#navbar_navChat").hide();
-            
+
+            $(".hideWhenLoggedOut").hide();
+
             // change Mobile Nav
             $("#navbar_logStatus").html('<i class="icon fa-sign-in" style="margin-right: .5em"></i><span class="indent-0">Login</span>');
             $("#navbar_logStatus").attr("href", "#login");
@@ -381,28 +365,27 @@ function updateLoggedInNavigations(){
     } else  {
             // logged in
             console.log("eingeloggt")
-            
+
             // change Desktop Nav
             $("#logStatus").removeClass("fa-sign-in");
             $("#logStatus").addClass("fa-sign-out").attr("href", "#");
             $("#logStatus span").html("Logout");
-            
-            $("#navStore").show();
-            $("#navbar_navStore").show();
-            $("#navProfile").show();
-            $("#navbar_navProfile").show();
-            $("#navChat").show();
-            $("#navbar_navChat").show();
-            
+
+            $(".hideWhenLoggedOut").show();
+
             // change Mobile Nav
             $("#navbar_logStatus").html('<i class="icon fa-sign-out" style="margin-right: .5em"></i><span class="indent-0">Logout</span>');
             $("#navbar_logStatus").attr("href", "#");
             $("#navbar_logStatus").attr("onclick", "logOut()");
-            
     }
 }
 
 // get loggedIn status from server
+
+/*
+ *
+ * @returns {int}
+ */
 function updateLoggedInStatus(){
 	$.ajax({
                 cache: false,
@@ -415,9 +398,8 @@ function updateLoggedInStatus(){
 		}
 	});
 }
-
 function logOut(){
-    var csrftoken = getCookie("csrftoken");		  
+    var csrftoken = getCookie("csrftoken");
     $.ajax({
             url: baseDomain + "/api/auth/logout/",
             method: 'POST',
@@ -473,12 +455,12 @@ function updateChatNotifNumber(notifNumber){
     if(notifNumber == 0){
         $("#navChat").html('<span>Chat</span>')
     } else {
-        $("#navChat").html('<div class="circle notification">'+notifNumber+'</div><span>Chat</span>')        
+        $("#navChat").html('<div class="circle notification">'+notifNumber+'</div><span>Chat</span>')
     }
 }
 
 function confirmPickupJoin(pickupID, pickupListID){
-    var csrftoken = getCookie("csrftoken");  
+    var csrftoken = getCookie("csrftoken");
     $.post(baseDomain + "/api/pickup-dates/" + pickupID + "/add/",
                     {
                             name: "",
@@ -489,7 +471,7 @@ function confirmPickupJoin(pickupID, pickupListID){
                             if(status){
                                     $("#" + pickupListID).pickupList("update");
                             }
-    })  
+    })
     .fail(function() {
         alert( "Couldn't join!" );
     });
@@ -497,7 +479,7 @@ function confirmPickupJoin(pickupID, pickupListID){
 
 
 function confirmPickupLeave(pickupID, pickupListID){
-    var csrftoken = getCookie("csrftoken");  
+    var csrftoken = getCookie("csrftoken");
     $.post(baseDomain + "/api/pickup-dates/" + pickupID + "/remove/",
                     {
                             name: "",
@@ -508,14 +490,19 @@ function confirmPickupLeave(pickupID, pickupListID){
                             if(status){
                                     $("#" + pickupListID).pickupList("update");
                             }
-    })  
+    })
     .fail(function() {
         alert( "Couldn't leave pickup :O" );
     });
 }
 
 
-// is Number in Array
+/**
+ * checks if number is in array
+ * @param {number} curNum
+ * @param {Array|numbers} curArr
+ * @returns {Boolean}
+ */
 function isNumberInArray(curNum, curArr){
     if (jQuery.inArray(curNum, curArr) == -1){
         return false;
@@ -524,24 +511,41 @@ function isNumberInArray(curNum, curArr){
     }
 }
 
+/**
+ * @param {storeID} storeID
+ * @returns {store}
+ */
 function getStoreData(storeID){
     return $.grep(storedStoreData, function(e){ return e.id == storeID; })[0];
 }
 
-//map user-array to their infos
+/**
+ * map user-array to their infos
+ * @param {Array|userID} userIDs to be mapped
+ * @returns {Array|users}
+ */
 function mapUserArray(curUserArray){
     return curUserArray.map(function(id) {
                 return $.grep(storedUserData, function(e){ return e.id == id; })[0];
             });
 }
 
-//gets value of a cookie
+/**
+ * gets value of a cookie
+ * @param {String} cookie name
+ * @returns {String} cookie value
+ */
 function getCookie(name) {
     var value = "; " + document.cookie;
     var parts = value.split("; " + name + "=");
-    if (parts.length == 2) return parts.pop().split(";").shift();
+    if (parts.length == 2)
+        return parts.pop().split(";").shift();
 }
 
+/**
+ * Returns array of all GET URL variables
+ * @returns {Array|urlVar}
+ */
 function getUrlVars(){
     var vars = [], hash;
     var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
@@ -554,10 +558,19 @@ function getUrlVars(){
     return vars;
 }
 
+/**
+ * gets GET URL variable
+ * @param {String} name
+ * @returns {urlVar}
+ */
 function getUrlVar(name){
     return getUrlVars()[name];
 }
 
+/**
+ * Gets all store data and saves it to "storedUserData"
+ * @returns {undefined}
+ */
 function getAllUserData(){
 	$.ajax({
                 cache: false,
@@ -569,6 +582,11 @@ function getAllUserData(){
 		}
 	});
 }
+
+/**
+ * Gets all store data and saves it to "storedStoreData"
+ * @returns {undefined}
+ */
 function getAllStoreData(){
 	$.ajax({
                 cache: false,
@@ -581,9 +599,13 @@ function getAllStoreData(){
 	});
 }
 
+/**
+ * @param {groupID}
+ * @returns {undefined}
+ */
 function joinGroup(groupID){
     var csrftoken = getCookie("csrftoken");
-    
+
     	$.post(baseDomain + "/api/groups/" + groupID + "/join/",
 			{
 				name: "",
@@ -595,14 +617,19 @@ function joinGroup(groupID){
 					alert("Gruppe beigetreten!")
                                         loadPage("homeScreen?groupID=" + groupID)
 				}
-	})  
+	})
             .fail(function() {
                 alert( "Konnte nicht beitreten..." );
             });
 }
 
+/**
+ * Lets current user leave a Group 
+ * @param {groupID}
+ * @returns {undefined}
+ */
 function leaveGroup(groupID){
-    var csrftoken = getCookie("csrftoken");   
+    var csrftoken = getCookie("csrftoken");
     $.post(baseDomain + "/api/groups/" + groupID + "/leave/",
                     {
                             name: "",
@@ -613,24 +640,28 @@ function leaveGroup(groupID){
                             if(status){
                                     location.reload();
                             }
-    })  
+    })
         .fail(function() {
             alert( "Gruppe verlassen nicht möglich..." );
         });
 }
 
+/**
+ * Sets new Title for current page
+ * @param {String} titleString
+ * @returns {undefined}
+ */
 function setDocumentTitle(titleString){
     document.title = titleString + " | Yunity"
 }
-
 
 /************* Init Stuff ******/
 
 $( document ).ready(function() {
         getAllUserData();
         getAllStoreData();
-        
-        
+
+
         createNavbar();
         $.ajaxSetup({
             xhrFields: {
@@ -639,4 +670,4 @@ $( document ).ready(function() {
         });
         updateLoggedInStatus();
 });
-	  		
+

@@ -24,7 +24,7 @@ function createPickup(){
     var pickupDate = $("#createPickup-datetimepicker").val();
     var numColect = $("#createPickup-numCollectors").val();
     var csrftoken = getCookie("csrftoken");
-    
+    pickupDate = pickupDate + "+02";
     console.log({
                     date: pickupDate,
                     max_collectors: numColect,
@@ -59,7 +59,9 @@ $( document ).ready(function() {
     getStoreInfo()
     $('#createPickup-datetimepicker').datetimepicker({
 	inline:true,
-	format:'Y-m-d H:i:s'
+	format:'Y-m-d H:i:s',
+        stepHour: 2,
+        stepMinute: 10
     });
     $('#createPickup-datetimepicker').datetimepicker('reset');
     
