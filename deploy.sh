@@ -9,4 +9,4 @@ cp -R assets images pages index.html public/
 
 echo "sending [public] to [$HOST]"
 
-rsync -av --delete public/ deploy@$HOST:public/
+rsync -av --delete public/ deploy@$HOST:public-mvp-proposal/
