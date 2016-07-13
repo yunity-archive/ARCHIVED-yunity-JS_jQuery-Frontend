@@ -21,19 +21,6 @@ function replaceStringForSearch(res) {
     return res;
 }
 
-// get all Stores
-function getStoreData(storeID){
-	$.ajax({
-                cache: false,
-                url: baseDomain + "/api/stores/" + storeID,
-		method: 'GET',
-		dataType: "json",
-		success : function(data) {
-                    displayStoreData(data);
-		}
-	});
-}
-
 function displayStoreData(data){
     console.log(data);
     $("#store-storeName").html(data["name"]);
@@ -62,7 +49,7 @@ var pickupUpdateFunc = function(pickupListInstance){
 }
 
 $( document ).ready(function() {
-    getStoreData(getUrlVar("id"));
+    displayStoreData(storedData.getById("stores", getUrlVar("id")));
     
     $("#store-pickups").pickupList();
     $("#store-pickups").pickupList("setOptions", {storeID: getUrlVar("id"), infoToShow: "", showFilterButton: true});

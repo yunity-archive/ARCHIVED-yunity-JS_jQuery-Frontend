@@ -32,9 +32,8 @@ function renewDropdowns(){
         pickupArea,
         currentInstance,
         sortKeyword,
-        updateFunction;
-    
-    var settings;
+        updateFunction,
+        settings;
         
     // public methods that can be called
     var methods = {
@@ -197,7 +196,7 @@ function renewDropdowns(){
             if(settings.infoToShow == "date"){
                 info = time.toLocaleDateString();
             } else if(settings.infoToShow == "store"){
-                var storeData = getStoreData(entry["store"]);
+                var storeData = storedData.getById("stores", entry["store"]);
                 info = '<a class="jumplink" href="#store?id=' + storeData["id"] + '">' + storeData["name"] + '</a>';
             }
             _addPickup(entry["id"], timeToDisplay, info, entry["collector_ids"], entry["max_collectors"]);
@@ -215,14 +214,14 @@ function renewDropdowns(){
             
             if(_isLoggedUserMember(people)){
                 if(settings.filter == 'open') return;
-                buttonsRight = '<div class="button small leave" onclick="confirmPickupLeave('+id+",'" + currentInstance.attr("id") + "'"+ ')">leave</div></div>';
+                buttonsRight = '<div class="button small leave" onclick="api.pickups.leave('+id+",'" + currentInstance.attr("id") + "'"+ ')">leave</div></div>';
             } else if(collectorsNumber >= maxCollectors){
                 if(settings.filter == 'joined') return;
                 if(settings.filter == 'open') return;
                 buttonsRight = '<div class="button small disabled")">full!</div></div>';
             } else {
                 if(settings.filter == 'joined') return;
-                buttonsRight = '<div class="button small" onclick="confirmPickupJoin('+id+",'" + currentInstance.attr("id") + "'"+ ')">join</div></div>';
+                buttonsRight = '<div class="button small" onclick="api.pickups.join('+id+",'" + currentInstance.attr("id") + "'"+ ')">join</div></div>';
             }
             
             people = mapUserArray(people);
@@ -264,19 +263,54 @@ function renewDropdowns(){
     var recipients = [],
         currentRecipient = null,
         currentInstance,
-        updateFunction;
-        
-        
-    var settings = {
-            colorSender: false,
-            colorReceiver: true
-    };
+        updateFunction,
+        currentInstanceUserlist,
+        currentInstanceMessages,
+        settings;
         
     // public methods that can be called
     var methods = {
         init : function() {
+            settings = {};
             currentInstance = this;
+            currentInstanceUserlist = $('<div id="chatWindow-users" class="4u" style="height: 30em; overflow-y: auto;">');
+            currentInstance.append(currentInstanceUserlist);
+            currentInstanceMessages = $('<div id="chat-messages" style="height: 24em" class="8u 12u(mobile)">');
+            currentInstance.append(currentInstanceMessages);
+            currentInstance.append('<div class="8u 12u(mobile)" style="height: 6em; padding: 2em">'+
+                    '<div style="width: 100%; position: relative">'+
+                        '<div id="chat-message-textarea-div"><textarea rows="1" id="chat-message-textarea" style="width: 100%"placeholder="Your message..." type="text"></textarea></div>'+
+                            '<div id="chat-message-send" class="button small" style="height:3em; margin: 0.2em;">send</div>'+
+                    '</div></div>');
+        },
+        setRecipients: function(usersArray){
+            recipients = usersArray;
+            _createUserList();
+            
+            /*currentInstanceUserlist.panel({
+                    delay: 500,
+                    hideOnClick: true,
+                    hideOnSwipe: true,
+                    resetScroll: true,
+                    resetForms: true,
+                    side: 'left',
+                    visibleClass: '4u'
+            });*/
+            
+            
         }
+    };
+    
+    var _createUserList = function(){
+        recipients.forEach(function(entry, index) {
+		if(recipients[index]["id"] == currentRecipient){
+			currentInstanceUserlist.append('<a id="chat-chatUserButton' + recipients[index]["id"] + '" class="chat-user active">'+entry["display_name"]+'</a>');
+                        $('#chat-chatUserButton' + recipients[index]["id"]).on("click", function(){hideChatUsersPanel();});
+		} else {
+			currentInstanceUserlist.append('<a id="chat-chatUserButton' + recipients[index]["id"] + '" class="chat-user">'+entry["display_name"]+'</a>');						
+                        $('#chat-chatUserButton' + recipients[index]["id"]).on("click", function(){changeCurrentRecipient(recipients[index]["id"]);});
+                }
+            });
     };
     
 

@@ -1,11 +1,6 @@
 
 var groupStores;
 
-function displayHomeScreenPickupConfirm(id, setDisplay){
-    alert("test" + setDisplay);
-}
-
-
 function addStore(id, name){
     var storeButtonString = '<a href="#store?id=' + id + '" class="jumplink"><div class="homeScreen-store">' + name + '</div></a>';
     $("#homeScreen-stores").append(storeButtonString);
@@ -13,8 +8,7 @@ function addStore(id, name){
 
 // get Stores for current Group
 function getStoresForCurrentGroup(){
-    console.log(storedStoreData);
-    groupStores =  $.grep(storedStoreData, function(e){return e.group == currentGroup; });  
+    groupStores =  $.grep(storedData.getAll("stores"), function(e){return e.group == currentGroup; });  
 
     groupStores.forEach(function(entry) {
             addStore(entry["id"], entry["name"]);
@@ -28,18 +22,8 @@ function displayGroupInfo(data){
     setDocumentTitle(data["name"]);
 }
 
-// get User Group
-function getThisGroup(){
-        $.ajax({
-                cache: false,
-                url: baseDomain + "/api/groups/" + currentGroup + "/",
-		method: 'GET',
-		dataType: "json",
-		success : function(data) {
-                    displayGroupInfo(data);
-		}
-        });
-}
+
+// -------------- Pickup requests -------------------------
 
 function isPickupStoreInGroup(storeID){
     return !(jQuery.isEmptyObject($.grep(groupStores, function(e){return e.id == storeID; })));
@@ -71,21 +55,21 @@ var pickupUpdateFunc = function(pickupListInstance){
         });
 }
 
+// ---------------------------------------
+
 $("#homescreen-createStoreButton").click(function(e) {
     e.preventDefault();
     loadPage("createStore?groupID=" + currentGroup);
 });
 
 $( document ).ready(function() {
-
-    
     if(getUrlVar("groupID") != undefined){
         currentGroup = getUrlVar("groupID");
     }
     
     if(currentGroup != null){
         getStoresForCurrentGroup();
-        getThisGroup();
+        displayGroupInfo(storedData.getById("groups", currentGroup));
 
         $("#homescreen-pickups").pickupList();
         $("#homescreen-pickups").pickupList("setOptions", {headerTitle: "Your Pick-Ups", infoToShow: "store"});

@@ -10,18 +10,6 @@ function showUserData(data){
     setDocumentTitle(data["first_name"]);
 }
 
-function getAndShowUserData(userID){
-        $.ajax({
-                cache: false,
-                url: baseDomain + "/api/users/" + userID + "/",
-		method: 'GET',
-		dataType: "json",
-		success : function(data) {
-                    showUserData(data);
-		}
-            });
-}
-
 function getAllCommunitiesForUser(userID){
         $.ajax({
                 cache: false,
@@ -34,36 +22,34 @@ function getAllCommunitiesForUser(userID){
             });    
 }
 
-
-
-
 function displayCommunitiesForUser(userID, data){
     data.forEach(function(entry) {
-                            if(isNumberInArray(userID, entry["members"])){
-                                var joinGroupButton = "";
-                                if(displayCurrentUser){
-                                    joinGroupButton = '<i onclick="leaveGroup('+entry["id"]+')" style="display: inline-block; margin-left: 1em" class="icon iconButton fa-sign-out"></i>';
-                                }
-                                $("#profile-communities").append('<div><a style="display:inline-block;" href="#homeScreen?groupID='+entry["id"]+'" class="jumplink"><div class="profile-community">'+entry["name"]+'</div></a>' +
-                                        joinGroupButton + '</div>');
-                            } else {
-                                $("#profile-otherCommunities").append('<div><a style="display:inline-block;" href="#homeScreen?groupID='+entry["id"]+'" class="jumplink"><div class="profile-community">'+entry["name"]+'</div></a>' +
-                                        '<i onclick="joinGroup('+entry["id"]+')" style="display: inline-block; margin-left: 1em" class="icon iconButton fa-sign-in"></i></div>');
-                            }
-                    });
+            if(isNumberInArray(userID, entry["members"])){
+                    var joinGroupButton = "";
+                    if(displayCurrentUser){
+                        joinGroupButton = '<i onclick="api.groups.leave('+entry["id"]+')" style="display: inline-block; margin-left: 1em" class="icon iconButton fa-sign-out"></i>';
+                    }
+                    $("#profile-communities").append('<div><a style="display:inline-block;" href="#homeScreen?groupID='+entry["id"]+'" class="jumplink"><div class="profile-community">'+entry["name"]+'</div></a>' + joinGroupButton + '</div>');
+            } else {
+                $("#profile-otherCommunities").append('<div><a style="display:inline-block;" href="#homeScreen?groupID='+entry["id"]+'" class="jumplink"><div class="profile-community">'+entry["name"]+'</div></a>' +
+                        '<i onclick="api.groups.join('+entry["id"]+')" style="display: inline-block; margin-left: 1em" class="icon iconButton fa-sign-in"></i></div>');
+            }
+    });
 }
 
 $( document ).ready(function() {
-    var urlGetUser = getUrlVar("userID");
-    if(urlGetUser == undefined || urlGetUser == loggedInUserData["id"]){
+    var urlGetUser = parseInt(getUrlVar("userID"));
+    if(urlGetUser == undefined || isNaN(urlGetUser) || urlGetUser == loggedInUserData["id"]){
         displayCurrentUser = true;
         showUserData(loggedInUserData);
-        getAllCommunitiesForUser(loggedInUserData["id"]);
+        displayCommunitiesForUser(loggedInUserData["id"], storedData.getAll("groups"));
     } else {
         displayCurrentUser = false;
-        getAndShowUserData(urlGetUser)
-        getAllCommunitiesForUser(urlGetUser);
-        $("#profile-otherCommunities").hide();
+        showUserData(storedData.getById("users", urlGetUser));
+        displayCommunitiesForUser(urlGetUser, storedData.getAll("groups"));
+        console.log(storedData.getAll("groups"));
+        
+        //var userCommunities = storedData.getByFunction("groups", function(a, urlGetUser){return isNumberInArray(urlGetUser, a.members);});
+        //$("#profile-otherCommunities").hide();
     }
 });
-	  		

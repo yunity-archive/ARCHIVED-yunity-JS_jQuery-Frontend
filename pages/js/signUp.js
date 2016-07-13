@@ -1,19 +1,29 @@
 
-// adds a new Pickup to the Pickup list
-function checkEMail(){
-        console.log("change");
-	/*var eMail = $("#signUp-email-input").val();
-	if(eMail == ""){
-		$("#signUp-notice-email").html("");
-		return false;
-	} else if (eMail.length < 3 || eMail.indexOf("@") == -1 || eMail.indexOf(".") == -1){
-		$("#signUp-notice-email").html("Bitte gib eine gültige E-Mail Adresse an!");
-		return false;
-	}  else {
-		//checkIfEmailExists();
-		return false;
-	}*/
+
+
+function signUp(){
+    var pw = $("#signUp-pw-input").val();
+    var pwRepeat = $("#signUp-pwRepeat-input").val();
+    
+    if(pw != pwRepeat){
+        alert("Passwörter müssen übereinstimmen!")
+        return;
+    }
+        
+    api.users.signUp({
+                display_name: $("#signUp-username-input").val(),
+                first_name: $("#signUp-firstname-input").val(),
+                last_name: $("#signUp-lastname-input").val(),
+                email: $("#signUp-email-input").val(),
+                password: pw
+            });
 }
+
+$('#signUp-signUpButton').click(function (e) {
+  signUp();
+});
+
+
 
 $( document ).ready(function() {
     $("#signUp-email-input").on('change', checkEMail());

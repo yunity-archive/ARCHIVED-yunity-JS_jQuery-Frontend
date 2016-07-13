@@ -6,19 +6,6 @@ function displayGroupInfo(data){
     groupID = data["id"];
 }
 
-
-function getGroupInfo(){
-	$.ajax({
-                cache: false,
-                url: baseDomain + "/api/groups/" + getUrlVar("groupID") + "/",
-		method: 'GET',
-		dataType: "json",
-		success : function(data) {
-                    displayGroupInfo(data);
-		}
-	});
-}
-
 function createStore(){
     var storeName = $("#createStore-storeName").val();
     var storeDesc = $("#createStore-storeDesc").val();
@@ -48,6 +35,6 @@ $("#createStore-createButton").click(function( event ) {
 });
 
 $( document ).ready(function() {
-    getGroupInfo()
+    displayGroupInfo(storedData.getById("groups", getUrlVar("groupID")));
 });
 	  

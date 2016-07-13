@@ -7,19 +7,6 @@ function displayStoreInfo(data){
     storeID = data["id"];
 }
 
-function getStoreInfo(){
-	$.ajax({
-                cache: false,
-                url: baseDomain + "/api/stores/" + getUrlVar("storeID") + "/",
-		method: 'GET',
-		dataType: "json",
-		success : function(data) {
-                    displayStoreInfo(data);
-		}
-	});
-}
-
-
 function createPickup(){
     var pickupDate = $("#createPickup-datetimepicker").val();
     var numColect = $("#createPickup-numCollectors").val();
@@ -56,7 +43,7 @@ $("#createGroup-createButton").click(function( event ) {
 });
 
 $( document ).ready(function() { 
-    getStoreInfo()
+    displayStoreInfo(storedData.getById("stores", getUrlVar("storeID")))
     $('#createPickup-datetimepicker').datetimepicker({
 	inline:true,
 	format:'Y-m-d H:i:s',

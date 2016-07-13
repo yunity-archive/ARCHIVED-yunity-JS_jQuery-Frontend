@@ -6,19 +6,14 @@
 
 /* Here, you can define how fast the window should be animated */
 var settings = {
-
         // Speed to resize panel.
                 resizeSpeed: 600,
-
         // Speed to fade in/out.
                 fadeSpeed: 300,
-
         // Size factor.
                 sizeFactor: 17,
-
         // Minimum point size.
                 sizeMin: 12,
-
         // Maximum point size.
                 sizeMax: 18
     };
@@ -28,8 +23,6 @@ var $window = $(window),
     $body = $('body');
 
 var isMobile = false,
-    $body,
-    $window = $(window),
     $main,
     $hbw,
     $footer,
@@ -38,12 +31,11 @@ var isMobile = false,
     $form,
     hash,
     isLocked = false,
-    activePanelId = null,
-    firstPanelId = 'homeScreen',
+    activePageName = null,
+    firstPageName = 'homeScreen',
     baseDomain = "",
 
-    loggedInUserData,
-    storedStoreData,
+    loggedInUserData = {"isLoggedIn": false},
     storedUserData,
     currentGroup,
     pageRefreshed = true;
@@ -171,7 +163,7 @@ var isMobile = false,
             if (hash) {
                     loadPage(hash)
                 } else {
-                loadPage(firstPanelId)
+                loadPage(firstPageName)
             }
 
             $wrapper.fadeTo(400, 1.0);
@@ -218,21 +210,23 @@ function createNavbar(){
 
 }
 
-// ************** Functions for ajax Requests ***********************
 
+// *************** History Changes ************
 
-    // when back / forward button is pressed
-    $(window).bind("popstate", function(e) {
-        var state = e.originalEvent.state;
-        if(state) {
-            location.reload();
-        }
-    });
-
-   // when hash changed in URL
-    $(window).bind('hashchange', function() {
+// when back / forward button is pressed
+$(window).bind("popstate", function(e) {
+    var state = e.originalEvent.state;
+    if(state) {
         location.reload();
-    });
+    }
+});
+
+// when hash changed in URL
+ $(window).bind('hashchange', function() {
+     location.reload();
+ });
+
+// ************** Functions for ajax Requests ***********************
 
 // load new page with ajax
 function loadPage(id){
@@ -245,7 +239,7 @@ function loadPage(id){
         instant = false;
 
     // Check lock state and determine whether we're already at the target.
-        if (isLocked || activePanelId == pageName)
+        if (isLocked || activePageName == pageName)
                 return false;
     // Lock.
         isLocked = true;
@@ -257,7 +251,7 @@ function loadPage(id){
 
         // Create new history object
         var pageURL = "#";
-        if(id != firstPanelId){
+        if(id != firstPageName){
             pageURL = "#" + id;
         }
         if(pageRefreshed){
@@ -295,7 +289,7 @@ function loadPage(id){
                             });
 
                             // Set new active.
-                            activePanelId = pageName;
+                            activePageName = pageName;
 
                             // Force scroll to top.
                             $hbw.animate({
@@ -338,15 +332,200 @@ function refreshJumplinks(){
     });
 }
 
-/*********** Login Functions **********/
+/**
+ * Stored Data - helpful to manage redundant ajax-requests
+ * currently, all data is downloaded once, after it was required first.
+ * Data can be refreshed with "storedData.refresh("whateverYouWantToRefresh")
+ * 
+ * @type functions
+ */
+var storedData = {
+    getById: function(dataName, idValue){
+        resultData = storedData.getByFunction(dataName, function(a){return a.id == idValue;});
+        return resultData[0];
+    },
+    getByFunction: function(dataName, valueFunction){
+        return $.grep(storedData.getAll(dataName), valueFunction);      
+    },
+    getAll: function(apiURL){
+        var returnedData = storedData.getFromStorage(apiURL);
+        if(returnedData != undefined){
+            return returnedData;
+        } else {
+            var data =  $.ajax({
+                    cache: true,
+                    url: baseDomain + "/api/" + apiURL,
+                    method: 'GET',
+                    dataType: "json",
+                    async: false
+                }).responseJSON;
+            storedData.updateStorageForItem(apiURL, data);
+            return data;
+        }
+    },
+    refresh: function(apiURL){
+        api.get(apiURL, {
+            success : function(data) {
+                storedData.updateStorageForItem(apiURL, data);
+            }
+        });
+    },    
+    updateStorageForItem: function(itemName, data){
+        console.log(data);
+        storedData.storage[itemName] = data;
+        console.log(storedData.storage);
+    },
+    getFromStorage: function(itemName){
+        return storedData.storage[itemName];
+    },
+    storage: {}
+};
 
-function loginUserError(data, status){
-	alert("Error!");
-}
+
+/**
+ * All API functions are defined here, so its easier to track and change according to backend changes
+ * @type functions
+ */
+var api = {
+    users: {
+                updateLoggedInStatus: function(){
+                api.get("auth/status/", {
+                          success : function(data) {
+                              loggedInUserData = data;
+                              loggedInUserData.isLoggedIn = (loggedInUserData["display_name"] !== "");
+                              console.log(loggedInUserData);
+                              updateLoggedInNavigations();
+                          }
+                      });  
+                },
+                login: function(data){
+                    console.log(data);
+                    api.post("auth/", data, {
+                            success: function(response) {
+                                loggedInUserData = response;
+                                loggedInUserData.isLoggedIn = true;
+                                console.log(loggedInUserData);
+                                updateLoggedInNavigations();
+                                loadPage("homeScreen");
+                            },
+                            error: function (request, error) {
+                                alert("Login failed!")
+                            }
+                    });        
+                },
+                logout: function(){
+                    api.post("auth/logout/", {"email": "", "password": ""}, {           
+                        success : function() {
+                            loggedInUserData.isLoggedIn = false;
+                            if(isMobile){
+                                location.reload();
+                            }
+                            updateLoggedInNavigations();
+                        }
+                    });    
+                },
+                signUp: function(data){
+                    api.post("users/", data, {           
+                        success : function(){
+                            alert("Account erstellt!");
+                            loadPage("login");
+                        },
+                        error: function (request, error) {
+                            alert("Couldn't create account!")
+                        }
+                    });    
+                }  
+    },
+    pickups: {
+                join: function(pickupID, pickupListID){
+                    api.post("pickup-dates/" + pickupID + "/add/", {}, {
+                        success: function(data, status){
+                            if(status){
+                                $("#" + pickupListID).pickupList("update");
+                            }
+                        }
+                    });
+                },
+                leave: function(pickupID, pickupListID){
+                    api.post("pickup-dates/" + pickupID + "/remove/", {}, {
+                        success: function(data, status){
+                            if(status){
+                                $("#" + pickupListID).pickupList("update");
+                            }
+                        }
+                    });
+                }
+    },
+    groups: {
+                join: function(groupID){
+                    alert(groupID);
+                    api.post("groups/" + groupID + "/join/", {}, {
+                        success: function(data, status){
+                            if(status){
+                                    alert("Gruppe beigetreten!")
+                                    storedData.refresh("groups");
+                                    loadPage("homeScreen?groupID=" + groupID)
+                            }
+                        } 
+                    });
+                },
+                leave: function(groupID){
+                    api.post("groups/" + groupID + "/leave/", {}, {
+                        success: function(data, status){
+                            if(status){
+                                    location.reload();
+                            }
+                        } 
+                    });
+                }
+    },
+    get: function(pathToGetFromApi, options){
+        var defaultAjaxOptions = {
+                url: baseDomain + "/api/" + pathToGetFromApi,
+		method: 'GET',
+		dataType: "json"
+            };
+        if(options !== undefined){
+            defaultAjaxOptions = $.extend(defaultAjaxOptions, options);
+        }
+	$.ajax(defaultAjaxOptions);        
+    },
+    post: function(pathToPostInApi, data, options){
+        if(loggedInUserData.isLoggedIn){
+            var csrftoken = getCookie("csrftoken");
+            data = $.extend(data, {"csrfmiddlewaretoken": csrftoken});
+        }
+        var defaultAjaxOptions = {
+                url: baseDomain + "/api/" + pathToPostInApi,
+                method: 'POST',
+                data: data
+                };
+        if(options !== undefined){
+            defaultAjaxOptions = $.extend(defaultAjaxOptions, options);
+        }
+        $.ajax(defaultAjaxOptions); 
+    }
+};
+
 
 // Renew all Icons - display login status
 function updateLoggedInNavigations(){
-    if(loggedInUserData["display_name"] == ""){
+    if(loggedInUserData.isLoggedIn){
+            // logged in
+            console.log("eingeloggt")
+
+            // change Desktop Nav
+            $("#logStatus").removeClass("fa-sign-in");
+            $("#logStatus").addClass("fa-sign-out").attr("href", "#");
+            $("#logStatus span").html("Logout");
+
+            $(".hideWhenLoggedOut").show();
+
+            // change Mobile Nav
+            $("#navbar_logStatus").html('<i class="icon fa-sign-out" style="margin-right: .5em"></i><span class="indent-0">Logout</span>');
+            $("#navbar_logStatus").attr("href", "#");
+            $("#navbar_logStatus").attr("onclick", "api.users.logout()");
+    } else  {
             // not logged in
             console.log("nicht eingeloggt");
 
@@ -362,88 +541,14 @@ function updateLoggedInNavigations(){
             $("#navbar_logStatus").html('<i class="icon fa-sign-in" style="margin-right: .5em"></i><span class="indent-0">Login</span>');
             $("#navbar_logStatus").attr("href", "#login");
             $("#navbar_logStatus").attr("onclick", "");
-    } else  {
-            // logged in
-            console.log("eingeloggt")
-
-            // change Desktop Nav
-            $("#logStatus").removeClass("fa-sign-in");
-            $("#logStatus").addClass("fa-sign-out").attr("href", "#");
-            $("#logStatus span").html("Logout");
-
-            $(".hideWhenLoggedOut").show();
-
-            // change Mobile Nav
-            $("#navbar_logStatus").html('<i class="icon fa-sign-out" style="margin-right: .5em"></i><span class="indent-0">Logout</span>');
-            $("#navbar_logStatus").attr("href", "#");
-            $("#navbar_logStatus").attr("onclick", "logOut()");
     }
 }
-
-// get loggedIn status from server
-
-/*
- *
- * @returns {int}
- */
-function updateLoggedInStatus(){
-	$.ajax({
-                cache: false,
-                url: baseDomain + "/api/auth/status/",
-		method: 'GET',
-		dataType: "json",
-		success : function(data) {
-                    loggedInUserData = data;
-                    updateLoggedInNavigations();
-		}
-	});
-}
-function logOut(){
-    var csrftoken = getCookie("csrftoken");
-    $.ajax({
-            url: baseDomain + "/api/auth/logout/",
-            method: 'POST',
-            data: {"csrfmiddlewaretoken": csrftoken, "email": "", "password": ""},
-            success : function() {
-                        loggedInUserData["display_name"] = "";
-                        if(isMobile){
-                            location.reload();
-                        }
-                        updateLoggedInNavigations();
-                }
-    });
-}
-
 $( "#logStatus" ).click(function(e) {
-    if(loggedInUserData["display_name"] != ""){
-            logOut();
+    if(loggedInUserData.isLoggedIn){
+        api.users.logout();
     }
 });
 
-function signUp(){
-	var username = document.getElementById("signUp-username-input").value;
-	var firstname = document.getElementById("signUp-firstname-input").value;
-	var lastname = document.getElementById("signUp-lastname-input").value;
-	var pw = document.getElementById("signUp-pw-input").value;
-	var pwRepeat = document.getElementById("signUp-pwRepeat-input").value;
-	var email = document.getElementById("signUp-email-input").value;
-	$.post(baseDomain + "/api/users/",
-			{
-				display_name: username,
-				first_name: firstname,
-				last_name: lastname,
-				email: email,
-				password: pw
-			},
-			function(data, status){
-				if(status){
-					alert("Account erstellt!")
-                                        loadPage("login")
-				}
-			})  .fail(function() {
-				alert( "Falsches Passwort oder Falsche E-Mail Adresse!" );
-			});
-}
 
 /***************** Other Functions **********/
 /**
@@ -459,44 +564,6 @@ function updateChatNotifNumber(notifNumber){
     }
 }
 
-function confirmPickupJoin(pickupID, pickupListID){
-    var csrftoken = getCookie("csrftoken");
-    $.post(baseDomain + "/api/pickup-dates/" + pickupID + "/add/",
-                    {
-                            name: "",
-                            description: "",
-                            csrfmiddlewaretoken: csrftoken
-                    },
-                    function(data, status){
-                            if(status){
-                                    $("#" + pickupListID).pickupList("update");
-                            }
-    })
-    .fail(function() {
-        alert( "Couldn't join!" );
-    });
-}
-
-
-function confirmPickupLeave(pickupID, pickupListID){
-    var csrftoken = getCookie("csrftoken");
-    $.post(baseDomain + "/api/pickup-dates/" + pickupID + "/remove/",
-                    {
-                            name: "",
-                            description: "",
-                            csrfmiddlewaretoken: csrftoken
-                    },
-                    function(data, status){
-                            if(status){
-                                    $("#" + pickupListID).pickupList("update");
-                            }
-    })
-    .fail(function() {
-        alert( "Couldn't leave pickup :O" );
-    });
-}
-
-
 /**
  * checks if number is in array
  * @param {number} curNum
@@ -504,20 +571,13 @@ function confirmPickupLeave(pickupID, pickupListID){
  * @returns {Boolean}
  */
 function isNumberInArray(curNum, curArr){
-    if (jQuery.inArray(curNum, curArr) == -1){
+    if ($.inArray(curNum, curArr) == -1){
         return false;
     } else {
     return true;
     }
 }
 
-/**
- * @param {storeID} storeID
- * @returns {store}
- */
-function getStoreData(storeID){
-    return $.grep(storedStoreData, function(e){ return e.id == storeID; })[0];
-}
 
 /**
  * map user-array to their infos
@@ -526,7 +586,7 @@ function getStoreData(storeID){
  */
 function mapUserArray(curUserArray){
     return curUserArray.map(function(id) {
-                return $.grep(storedUserData, function(e){ return e.id == id; })[0];
+                return storedData.getById("users", id);
             });
 }
 
@@ -567,84 +627,6 @@ function getUrlVar(name){
     return getUrlVars()[name];
 }
 
-/**
- * Gets all store data and saves it to "storedUserData"
- * @returns {undefined}
- */
-function getAllUserData(){
-	$.ajax({
-                cache: false,
-                url: baseDomain + "/api/users/",
-		method: 'GET',
-		dataType: "json",
-		success : function(data) {
-                    storedUserData = data;
-		}
-	});
-}
-
-/**
- * Gets all store data and saves it to "storedStoreData"
- * @returns {undefined}
- */
-function getAllStoreData(){
-	$.ajax({
-                cache: false,
-                url: baseDomain + "/api/stores/",
-		method: 'GET',
-		dataType: "json",
-		success : function(data) {
-                    storedStoreData = data;
-		}
-	});
-}
-
-/**
- * @param {groupID}
- * @returns {undefined}
- */
-function joinGroup(groupID){
-    var csrftoken = getCookie("csrftoken");
-
-    	$.post(baseDomain + "/api/groups/" + groupID + "/join/",
-			{
-				name: "",
-				description: "",
-                                csrfmiddlewaretoken: csrftoken
-			},
-			function(data, status){
-				if(status){
-					alert("Gruppe beigetreten!")
-                                        loadPage("homeScreen?groupID=" + groupID)
-				}
-	})
-            .fail(function() {
-                alert( "Konnte nicht beitreten..." );
-            });
-}
-
-/**
- * Lets current user leave a Group 
- * @param {groupID}
- * @returns {undefined}
- */
-function leaveGroup(groupID){
-    var csrftoken = getCookie("csrftoken");
-    $.post(baseDomain + "/api/groups/" + groupID + "/leave/",
-                    {
-                            name: "",
-                            description: "",
-                            csrfmiddlewaretoken: csrftoken
-                    },
-                    function(data, status){
-                            if(status){
-                                    location.reload();
-                            }
-    })
-        .fail(function() {
-            alert( "Gruppe verlassen nicht möglich..." );
-        });
-}
 
 /**
  * Sets new Title for current page
@@ -658,16 +640,16 @@ function setDocumentTitle(titleString){
 /************* Init Stuff ******/
 
 $( document ).ready(function() {
-        getAllUserData();
-        getAllStoreData();
-
-
+        api.users.updateLoggedInStatus();
+        storedData.refresh("users");
+        storedData.refresh("stores");
+        storedData.refresh("groups");
+        
         createNavbar();
         $.ajaxSetup({
             xhrFields: {
 		withCredentials: true
             }
         });
-        updateLoggedInStatus();
 });
 

@@ -1,6 +1,6 @@
 
 
-var recipients = [];
+var recipientsa = storedData.getAll("users");
 var currentRecipient = null;
 
 function hideChatUsersPanel() {
@@ -16,29 +16,13 @@ function showChatUsersPanel() {
         hideChatUsersPanel();
     });
 }
-                    
-function getUsers() {
-	$.ajax({
-		url: baseDomain + "/api/users/",
-		dataType: "json",
-		success : function(data) {
-                        recipients = data;
-			updateRecipientsList();
-                        
-                        // Für Testzwecke auskommentiert
-                        //updateMessages(true);
-                        //scrollToBottomOfMessageContainer();
-		}
-	});
-        /*recipients = [{"id":1,"display_name":"ml","first_name":"m","last_name":"l","email":"m@l.de"},{"id":2,"display_name":"Lars","first_name":"Lars","last_name":"Wolf","email":"lars.m.wolf@gmx.de"}];
-	updateRecipientsList();*/
-        return;
-}
+           
 
 function changeCurrentRecipient(id){
 	currentRecipient = id;
         updateRecipientsList();
         updateMessages(false);
+        hideChatUsersPanel();
 }
 
 function updateMessages(instant){
@@ -53,29 +37,34 @@ function updateMessages(instant){
 
 
 function updateRecipientsList(){
-	var chatUserString = "";
         if(!currentRecipient){
             currentRecipient = recipients[0]["id"];
         }
+        $("#chat-users").html("");
 	recipients.forEach(function(entry, index) {
 		if(recipients[index]["id"] == currentRecipient){
-			chatUserString += '<div onclick="hideChatUsersPanel()" class="chat-user active">'+entry["display_name"]+'</div>';
+			$("#chat-users").append('<a id="chat-chatUserButton' + recipients[index]["id"] + '" class="chat-user active">'+entry["display_name"]+'</a>');
+                        $('#chat-chatUserButton' + recipients[index]["id"]).on("click", function(){hideChatUsersPanel();});
 		} else {
-			chatUserString += '<div onclick="changeCurrentRecipient('+entry["id"]+'), hideChatUsersPanel()" class="chat-user">'+entry["display_name"]+'</div>';						
-		}
+			$("#chat-users").append('<a id="chat-chatUserButton' + recipients[index]["id"] + '" class="chat-user">'+entry["display_name"]+'</a>');						
+                        $('#chat-chatUserButton' + recipients[index]["id"]).on("click", function(){changeCurrentRecipient(recipients[index]["id"]);});
+            }
 	});
-	document.getElementById("chat-users").innerHTML = chatUserString;
 }
 
 // Show Bottom of Chat-Message Div
 function scrollToBottomOfMessageContainer(){
-    var element = document.getElementById("chat-messages");
-    element.scrollTop = element.scrollHeight;
+    $("#chat-messages").scrollTop = $("#chat-messages").scrollHeight;
 }
 
 $( document ).ready(function() {
-    getUsers();
+    /*updateRecipientsList();
     updateChatNotifNumber(5);
-    showChatUsersPanel();
+    showChatUsersPanel();*/
+    
+    $("#chat-chatWindow").chatWindowBig();
+    var testData = [{"id": 1,"display_name": "Nick Sellen","first_name": "Nick","last_name": "Sellen","email": "yunity@nicksellen.co.uk"}, {"id": 1,"display_name": "Nick Sellen","first_name": "Nick","last_name": "Sellen","email": "yunity@nicksellen.co.uk"}];
+    
+    $("#chat-chatWindow").chatWindowBig("setRecipients", testData);
 });
 	  		
