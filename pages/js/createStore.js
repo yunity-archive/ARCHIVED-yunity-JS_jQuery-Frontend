@@ -20,8 +20,8 @@ function createStore(){
 			},
 			function(data, status){
 				if(status){
-					alert("Store erstellt!")
-                                        loadPage("homeScreen?groupID=" + getUrlVar("groupID"))
+					alert("Store erstellt!");
+                                        window.location.assign("#");
 				}
 	})  
             .fail(function() {

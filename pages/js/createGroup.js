@@ -11,8 +11,8 @@ function createStore(){
 			},
 			function(data, status){
 				if(status){
-					alert("Community erstellt!")
-                                        loadPage("homeScreen")
+					alert("Community erstellt!");
+                                        window.location.assign("#");
 				}
 	})  
             .fail(function() {
